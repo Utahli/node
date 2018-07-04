@@ -10,7 +10,7 @@
 
 要深入理解集合首先要了解下我们熟悉的数组：
 
-**数组**是大小固定的，并且同一个数组只能存放类型一样的数据（基本类型/引用类型），而JAVA集合可以存储和操作数目不固定的一组数据。 所有的JAVA集合都位于 java.util包中！ JAVA集合只能存放引用类型的的数据，不能存放基本数据类型。
+**数组**是大小固定的，并且同一个数组只能存放类型一样的数据（基本类型/引用类型），而JAVA集合可以存储和操作数目不固定的一组数据。 所有的JAVA集合都位于 java.util包中！ JAVA集合只能存放引用类型的数据，不能存放基本数据类型。
 
 简单说下集合和数组的区别：(参考文章：[《Thinking In Algorithm》03.数据结构之数组](http://blog.csdn.net/speedme/article/details/18180817))
 
@@ -110,6 +110,30 @@ public Vector(int initialCapacity,int capacityIncrement)//使用指定的初始�
 5. Vector是线程同步的，所以它也是线程安全的，而ArrayList是线程异步的，是不安全的。如果不考虑到线程的安全因素，一般用ArrayList效率比较高。
 
 6. 如果集合中的元素的数目大于目前集合数组的长度时，在集合中使用数据量比较大的数据，用Vector有一定的优势。
+
+## ArrayList 和 Vector
+
+这两个类都实现了List接口(List接口继承了Collection接口).
+
+他们都是有序集合,即存储在这两个集合中的元素的位置都是有顺序的,相当于一种动态的数组
+
+并且其中的数据是允许重复的
+
+ArrayList与Vector的区别
+
+- Vector的方法都是同步的(Synchronized), 是线程安全的, 也就是线程同步的, 而ArrayList是线程序不安全的. 对于Vector&ArrayList, Hashtable&HashMap, 要记住线程安全的问题, 记住Vector与Hashtable是旧的, 是java一诞生就提供了的, 它们是线程安全的, ArrayList与HashMap是java2时才提供的, 它们是线程不安全的.
+
+- ArrayList与Vector都有一个初始的容量大小, 当存储进它们里面的元素的个数超过了容量时, 就需要增加ArrayList与Vector的存储空间, Vector默认增长为原来两倍,而ArrayList的增长策略在文档中没有明确规定（从源代码看到的是增长为原来的1.5倍）.ArrayList与Vector都可以设置初始的空间大小, Vector还可以设置增长的空间大小, 而ArrayList没有提供设置增长空间的方法.
+
+**总结：即Vector增长原来的一倍,ArrayList增加原来的0.5倍. Vector 线程安全, ArrayList 不是.**
+
+
+
+**List特点：**元素有放入顺序，元素可重复 
+
+**Set特点：**元素无放入顺序，元素不可重复，重复元素会覆盖掉，（注意：元素虽然无放入顺序，但是元素在set中的位置是有该元素的HashCode决定的，其位置其实是固定的，加入Set 的Object必须定义equals()方法 ，另外list支持for循环，也就是通过下标来遍历，也可以用迭代器，但是set只能用迭代，因为他无序，无法用下标来取得想要的值。） 
+
+ 
 
 ## HashSet与Treeset的适用场景
 
@@ -446,3 +470,83 @@ equles方法内部是分别对name，age进行判断，是否相等。
 
 
 
+#### **1、 HashMap计算key的hash值时调用单独的方法，在该方法中会判断key是否为null，如果是则返回0；而Hashtable中则直接调用key的hashCode()方法，因此如果key为null，则抛出空指针异常。**
+
+#### 　　**2、 HashMap将键值对添加进数组时，不会主动判断value是否为null；而Hashtable则首先判断value是否为null。**
+
+#### 　　**3、以上原因主要是由于Hashtable继承自Dictionary，而HashMap继承自AbstractMap。**
+
+#### 　　**4、虽然ConcurrentHashMap也继承自AbstractMap，但是其也过滤掉了key或value为null的键值对。**
+
+使用iterator遍历
+
+```java
+
+private abstract class HashIterator<E> implements Iterator<E> {
+        HashMapEntry<K,V> next;        // next entry to return
+        int expectedModCount;   // For fast-fail
+        int index;              // current slot
+        HashMapEntry<K,V> current;     // current entry
+ 
+        HashIterator() {
+            expectedModCount = modCount;
+            if (size > 0) { // advance to first entry
+                HashMapEntry[] t = table;
+                while (index < t.length && (next = t[index++]) == null)
+                    ;
+            }
+        }
+ 
+        public final boolean hasNext() {
+            return next != null;
+        }
+ 
+        final Entry<K,V> nextEntry() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            HashMapEntry<K,V> e = next;
+            if (e == null)
+                throw new NoSuchElementException();
+ 
+            if ((next = e.next) == null) {
+                HashMapEntry[] t = table;
+                while (index < t.length && (next = t[index++]) == null)
+                    ;
+            }
+            current = e;
+            return e;
+        }
+ 
+        public void remove() {
+            if (current == null)
+                throw new IllegalStateException();
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            Object k = current.key;
+            current = null;
+            HashMap.this.removeEntryForKey(k);
+            expectedModCount = modCount;
+        }
+    }
+
+```
+
+
+
+# sleep() 和 wait() 的区别
+
+举个例子
+
+```
+sleep(1000)
+```
+
+会把把线程放到一边, 直到**整整**一秒之后才再次启动
+
+```
+wait(1000)
+```
+
+则是把线程放到一边**至多**一秒. 如果碰到 notify() 或者 notifyAll() 就会提前启动.
+
+而且 wait() 方法是在 Object 类里. 而 sleep() 是在 Thread 类里.
