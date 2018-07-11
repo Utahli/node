@@ -366,3 +366,465 @@ string在1.7版本之前不可以，1.7版本之后switch就可以作用在strin
 1packagecom.corn.testcast;23publicclassTestCast {45publicstaticvoidmain(String[] args) {6bytea = 3 + 5;//编译正常 编译成 3+5直接变为87intb = 3, c = 5;8byted = b + c;//编译错误：cannot convert from int to byte910bytee = 10, f = 11;11byteg = e + f;//编译错误 +直接将10和11类型提升为了int12byteh = (byte) (e + f);//编译正确13}1415}
 
 **当进行数学运算时，数据类型会自动发生提升到运算符左右之较大者**，以此类推。当将最后的运算结果赋值给指定的数值类型时，可能需要进行强制类型转换。
+
+
+
+# 动态代理的简要说明
+
+　　在java的动态代理机制中，有两个重要的类或接口，一个是 InvocationHandler(Interface)、另一个则是 Proxy(Class)。
+
+### 一、 InvocationHandler(interface)的描述：
+
+```
+InvocationHandler is the interface implemented by the invocation handler of a proxy instance. 
+
+Each proxy instance has an associated invocation handler. When a method is invoked on a proxy instance, the method invocation is encoded and dispatched to the invoke method of its invocation handler.
+```
+
+ 每一个动态代理类都必须要实现InvocationHandler这个接口，并且每个代理类的实例都关联到了一个handler，当我们通过代理对象调用 一个方法的时候，这个方法的调用就会被转发为由InvocationHandler这个接口的 invoke 方法来进行调用。我们来看看InvocationHandler这个接口的唯一一个方法 invoke 方法：
+
+```
+Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+```
+
+这个方法接收三个参数和返回一个Object类型，它们分别代表的意思如下：
+
+- proxy： 指代我们所代理的那个真实对象
+- method： 指代的是我们所要调用真实对象的方法的Method对象
+- args： 指代的是调用真实对象某个方法时接受的参数
+
+返回的Object是指真实对象方法的返回类型，以上会在接下来的例子中加以深入理解。
+
+```
+the value to return from the method invocation on the proxy instance.
+```
+
+ 
+
+### 二、 Proxy(Class)的描述：
+
+```
+Proxy provides static methods for creating dynamic proxy classes and instances, and it is also the superclass of all dynamic proxy classes created by those methods. 
+```
+
+Proxy这个类的作用就是用来动态创建一个代理对象。我们经常使用的是newProxyInstance这个方法：
+
+```
+public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces,  InvocationHandler h)  throws IllegalArgumentException
+```
+
+ 参数的理解：
+
+```
+// 一个ClassLoader对象，定义了由哪个ClassLoader对象来对生成的代理对象进行加载
+loader - the class loader to define the proxy class  
+// 一个Interface对象的数组，表示的是我将要给我需要代理的对象提供一组什么接口,如果我提供了一组接口给它，那么这个代理对象就宣称实现了该接口(多态)，这样我就能调用这组接口中的方法了
+interfaces - the list of interfaces for the proxy class to implement 
+// 一个InvocationHandler对象，表示的是当我这个动态代理对象在调用方法的时候，会关联到哪一个InvocationHandler对象上
+h - the invocation handler to dispatch method invocations to  
+```
+
+ 返回结果的理解： 一个代理对象的实例
+
+```
+a proxy instance with the specified invocation handler of a proxy class that is defined by the specified class loader and that implements the specified interfaces 
+```
+
+ 
+
+# 简单的Java代理
+
+我们创建一个Java项目用于对动态代理的测试与理解，项目结构如下：
+
+![img](data:image/png;base64,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)
+
+### 一、 先定义一个接口Interface，添加两个方法。
+
+```
+package com.huhx.proxy;
+
+public interface Interface {
+    void getMyName();
+
+    String getNameById(String id);
+}
+```
+
+ 
+
+### 二、 定义一个真实的实现上述接口的类，RealObject：
+
+```
+package com.huhx.proxy;
+
+public class RealObject implements Interface {
+    @Override
+    public void getMyName() {
+        System.out.println("my name is huhx");
+    }
+
+    @Override
+    public String getNameById(String id) {
+        System.out.println("argument id: " + id);
+        return "huhx";
+    }
+}
+```
+
+ 
+
+### 三、 定义一个代理对象，也实现了上述的Interface接口：
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+package com.huhx.proxy;
+
+public class SimpleProxy implements Interface {
+    private Interface proxied;
+
+    public SimpleProxy(Interface proxied) {
+        this.proxied = proxied;
+    }
+
+    @Override
+    public void getMyName() {
+        System.out.println("proxy getmyname");
+        proxied.getMyName();
+    }
+
+    @Override
+    public String getNameById(String id) {
+        System.out.println("proxy getnamebyid");
+        return proxied.getNameById(id);
+    }
+}
+```
+
+ 
+
+### 四、 SimpleMain在Main方法中，测试上述的结果：
+
+```java
+package com.huhx.proxy;
+
+public class SimpleMain {
+    private static void consume(Interface iface) {
+        iface.getMyName();
+        String name = iface.getNameById("1");
+        System.out.println("name: " + name);
+    }
+
+    public static void main(String[] args) {
+        consume(new RealObject());
+        System.out.println("========================================================");
+        consume(new SimpleProxy(new RealObject()));
+    }
+}
+```
+
+
+
+ 
+
+### 五、 运行的结果如下：
+
+```
+my name is huhx
+argument id: 1
+name: huhx
+========================================================
+proxy getmyname
+my name is huhx
+proxy getnamebyid
+argument id: 1
+name: huhx
+```
+
+
+
+# Java的动态代理
+
+　　完成了上述简单的Java代理，现在我们开始学习Java的动态代理，它比代理的思想更向前一步，因为它可以动态地创建代理并动态的处理对所代理方法的调用。在动态代理上所做的所有调用都会被重定向到单一的调用处理器上，它的工作是揭示调用的类型并确定相应的对策。下面我们通过案例来加深Java动态代理的理解：
+
+### 一、 创建一个继承了InvocationHandler的处理器：DynamicProxyHandler
+
+ ```java
+package com.huhx.dynamicproxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+public class DynamicProxyHandler implements InvocationHandler {
+    private Object proxied;
+
+    public DynamicProxyHandler(Object proxied) {
+        System.out.println("dynamic proxy handler constuctor: " + proxied.getClass());
+        this.proxied = proxied;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("dynamic proxy name: " + proxy.getClass());
+        System.out.println("method: " + method.getName());
+        System.out.println("args: " + Arrays.toString(args));
+        
+        Object invokeObject = method.invoke(proxied, args);
+        if (invokeObject != null) {
+            System.out.println("invoke object: " + invokeObject.getClass());
+        } else {
+            System.out.println("invoke object is null");
+        }
+        return invokeObject;
+    }
+}
+ ```
+
+
+
+###  二、 我们写一个测试的Main方法，DynamicProxyMain：
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif](javascript:void(0);)
+
+```
+package com.huhx.dynamicproxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+
+import com.huhx.proxy.Interface;
+import com.huhx.proxy.RealObject;
+
+public class DynamicProxyMain {
+    public static void consumer(Interface iface) {
+        iface.getMyName();
+        String name = iface.getNameById("1");
+        System.out.println("name: " + name);
+    }
+
+    public static void main(String[] args) throws Exception, SecurityException, Throwable {
+        RealObject realObject = new RealObject();
+        consumer(realObject);
+        System.out.println("==============================");
+
+        // 动态代理
+        ClassLoader classLoader = Interface.class.getClassLoader();
+        Class<?>[] interfaces = new Class[] { Interface.class };
+        InvocationHandler handler = new DynamicProxyHandler(realObject);
+        Interface proxy = (Interface) Proxy.newProxyInstance(classLoader, interfaces, handler);
+
+        System.out.println("in dynamicproxyMain proxy: " + proxy.getClass());
+        consumer(proxy);
+    }
+}
+```
+
+
+
+### 三、 运行结果如下：
+
+```
+my name is huhx
+argument id: 1
+name: huhx
+==============================
+dynamic proxy handler constuctor: class com.huhx.proxy.RealObject
+in dynamicproxyMain proxy: class com.sun.proxy.$Proxy0
+dynamic proxy name: class com.sun.proxy.$Proxy0
+method: getMyName
+args: null
+my name is huhx
+invoke object is null
+dynamic proxy name: class com.sun.proxy.$Proxy0
+method: getNameById
+args: [1]
+argument id: 1
+invoke object: class java.lang.String
+name: huhx
+```
+
+从以上输出结果，我们可以得出以下结论：
+
+- 与代理对象相关联的InvocationHandler，只有在代理对象调用方法时，才会执行它的invoke方法
+
+- invoke的三个参数的理解：Object proxy是代理的对象, Method method是真实对象中调用方法的Method类, Object[] args是真实对象中调用方法的参数
+
+- **为什么我们这里可以将其转化为Interface类型的对象？**原因就是在newProxyInstance这个方法的第二个参数上，我们给这个代理对象提供了一组什么接口，那么我这个代理对象就会实现了这组接口，这个时候我们当然可以将这个代理对象强制类型转化为这组接口中的任意一个，因为这里的接口是Subject类型，所以就可以将其转化为Subject类型了。
+
+  **同时我们一定要记住，通过 Proxy.newProxyInstance 创建的代理对象是在jvm运行时动态生成的一个对象，它并不是我们的InvocationHandler类型，也不是我们定义的那组接口的类型，而是在运行是动态生成的一个对象，并且命名方式都是这样的形式，以$开头，proxy为中，最后一个数字表示对象的标号**。
+
+ 
+
+# Java动态代理的原理
+
+### 一、 动态代理的关键代码就是Proxy.newProxyInstance(classLoader, interfaces, handler)，我们跟进源代码看看：
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) throws IllegalArgumentException {
+　　// handler不能为空
+    if (h == null) {
+        throw new NullPointerException();
+    }
+
+    final Class<?>[] intfs = interfaces.clone();
+    final SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+    }
+
+    /*
+     * Look up or generate the designated proxy class.
+     */
+　　// 通过loader和接口，得到代理的Class对象
+    Class<?> cl = getProxyClass0(loader, intfs);
+
+    /*
+     * Invoke its constructor with the designated invocation handler.
+     */
+    try {
+        final Constructor<?> cons = cl.getConstructor(constructorParams);
+        final InvocationHandler ih = h;
+        if (sm != null && ProxyAccessHelper.needsNewInstanceCheck(cl)) {
+            // create proxy instance with doPrivilege as the proxy class may
+            // implement non-public interfaces that requires a special permission
+            return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                public Object run() {
+                    return newInstance(cons, ih);
+                }
+            });
+        } else {
+　　　　　　　// 创建代理对象的实例
+            return newInstance(cons, ih);
+        }
+    } catch (NoSuchMethodException e) {
+        throw new InternalError(e.toString());
+    }
+}
+```
+
+ 
+
+### 二、 我们看一下newInstance方法的源代码：
+
+```
+private static Object newInstance(Constructor<?> cons, InvocationHandler h) {
+    try {
+        return cons.newInstance(new Object[] {h} );
+    } catch (IllegalAccessException | InstantiationException e) {
+        throw new InternalError(e.toString());
+    } catch (InvocationTargetException e) {
+        Throwable t = e.getCause();
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        } else {
+            throw new InternalError(t.toString());
+        }
+    }
+}
+```
+
+ 
+
+### 三、 当我们通过代理对象调用 一个方法的时候，这个方法的调用就会被转发为由InvocationHandler这个接口的 invoke 方法来进行调用。
+
+体现这句话的代码，我在源码中没有找到，于是我在测试类的main方法中加入以下代码：
+
+```
+if (proxy instanceof Proxy) {
+    InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
+    invocationHandler.invoke(proxy, realObject.getClass().getMethod("getMyName"), null);
+    System.out.println("--------------------------------------");
+}
+```
+
+这段代码的输出结果如下，与上述中调用代理对象中的getMyName方法输出是一样的，不知道Jvm底层是否是这样判断的：
+
+```
+dynamic proxy handler constuctor: class com.huhx.proxy.RealObject
+dynamic proxy name: class com.sun.proxy.$Proxy0
+method: getMyName
+args: null
+my name is huhx
+invoke object is null
+--------------------------------------
+```
+
+# 动态代理的局限性
+
+从动态代理的使用方法中我们看到其实可以被增强的方法都是实现了借口的（不实现借口的public方法也可以通过继承被代理类来使用），代码中的HouseOwner继承了RentHouse 。而对于private方法JDK的动态代理无能为力！
+ 以上的动态代理是JDK的，对于java工程还有大名鼎鼎的CGLib，但遗憾的是CGLib并不能在android中使用，android虚拟机相对与jvm还是有区别的。
+
+ 
+
+Proxy 静态方法生成动态代理类同样需要通过类装载器来进行装载才能使用，它与普通类的唯一区别就是其字节码==是由 JVM 在运行时动态生成==的而非预存在于任何一个 .class 文件中。 
+
+
+
+## 代理机制及其特点
+
+首先让我们来了解一下如何使用 Java 动态代理。具体有如下四步骤：
+
+1. 通过实现 InvocationHandler 接口创建自己的调用处理器；
+2. ==通过为 Proxy 类指定 ClassLoader 对象和一组 interface 来创建动态代理类==；
+3. 通过反射机制获得动态代理类的构造函数，其唯一参数类型是调用处理器接口类型；
+4. 通过构造函数创建动态代理类实例，构造时调用处理器对象作为参数被传入。
+
+##### 清单 3. 动态代理对象创建过程
+
+```java
+// InvocationHandlerImpl 实现了 InvocationHandler 接口，并能实现方法调用从代理类到委托类的分派转发
+// 其内部通常包含指向委托类实例的引用，用于真正执行分派转发过来的方法调用
+InvocationHandler handler = new InvocationHandlerImpl(..); 
+ 
+// 通过 Proxy 为包括 Interface 接口在内的一组接口动态创建代理类的类对象
+Class clazz = Proxy.getProxyClass(classLoader, new Class[] { Interface.class, ... }); 
+ 
+// 通过反射从生成的类对象获得构造函数对象
+Constructor constructor = clazz.getConstructor(new Class[] { InvocationHandler.class }); 
+ 
+// 通过构造函数对象创建动态代理类实例
+Interface Proxy = (Interface)constructor.newInstance(new Object[] { handler });
+```
+
+
+
+实际使用过程更加简单，因为 Proxy 的静态方法 newProxyInstance 已经为我们封装了步骤 2 到步骤 4 的过程，所以简化后的过程如下
+
+##### 清单 4. 简化的动态代理对象创建过程
+
+```java
+// InvocationHandlerImpl 实现了 InvocationHandler 接口，并能实现方法调用从代理类到委托类的分派转发
+InvocationHandler handler = new InvocationHandlerImpl(..); 
+ 
+// 通过 Proxy 直接创建动态代理类实例
+Interface proxy = (Interface)Proxy.newProxyInstance( classLoader, 
+     new Class[] { Interface.class }, 
+     handler );
+```
+
+接下来让我们来了解一下 Java 动态代理机制的一些特点。
+
+首先是动态生成的代理类本身的一些特点。1）包：如果所代理的接口都是 public 的，那么它将被定义在顶层包（即包路径为空），如果所代理的接口中有非 public 的接口（因为接口不能被定义为 protect 或 private，所以除 public 之外就是默认的 package 访问级别），那么它将被定义在该接口所在包（假设代理了 com.ibm.developerworks 包中的某非 public 接口 A，那么新生成的代理类所在的包就是 com.ibm.developerworks），这样设计的目的是为了最大程度的保证动态代理类不会因为包管理的问题而无法被成功定义并访问；2）==类修饰符：该代理类具有 final 和 public 修饰符，意味着它可以被所有的类访问，但是不能被再度继承==；3）==类名：格式是“$ProxyN”，其中 N 是一个逐一递增的阿拉伯数字，代表 Proxy 类第 N 次生成的动态代理类，值得注意的一点是，并不是每次调用 Proxy 的静态方法创建动态代理类都会使得 N 值增加，原因是如果对同一组接口（包括接口排列的顺序相同）试图重复创建动态代理类，它会很聪明地返回先前已经创建好的代理类的类对象，而不会再尝试去创建一个全新的代理类，这样可以节省不必要的代码重复生成，提高了代理类的创建效率。==4）类继承关系：该类的继承关系如图：
+
+##### 图 2. 动态代理类的继承图
+
+![](D:\workspace\Github\node\瑞秋\answer\assets\image002.png)
+
+由图可见，Proxy 类是它的父类，这个规则适用于所有由 Proxy 创建的动态代理类。而且该类还实现了其所代理的一组接口，这就是为什么它能够被安全地类型转换到其所代理的某接口的根本原因。
+
+接下来让我们了解一下代理类实例的一些特点。每个实例都会关联一个调用处理器对象，可以通过 Proxy 提供的静态方法 getInvocationHandler 去获得代理类实例的调用处理器对象。在代理类实例上调用其代理的接口中所声明的方法时，这些方法最终都会由调用处理器的 invoke 方法执行，此外，==值得注意的是，代理类的根类 java.lang.Object 中有三个方法也同样会被分派到调用处理器的 invoke 方法执行，它们是 hashCode，equals 和 toString，可能的原因有：一是因为这些方法为 public 且非 final 类型，能够被代理类覆盖；二是因为这些方法往往呈现出一个类的某种特征属性，具有一定的区分度，所以为了保证代理类与委托类对外的一致性，这三个方法也应该被分派到委托类执行。==**当代理的一组接口有重复声明的方法且该方法被调用时，代理类总是从排在最前面的接口中获取方法对象并分派给调用处理器，而无论代理类实例是否正在以该接口（或继承于该接口的某子接口）的形式被外部引用，因为在代理类内部无法区分其当前的被引用类型。**
+
+接着来了解一下被代理的一组接口有哪些特点。首先，要注意不能有重复的接口，以避免动态代理类代码生成时的编译错误。其次，这些接口对于类装载器必须可见，否则类装载器将无法链接它们，将会导致类定义失败。再次，需被代理的所有非 public 的接口必须在同一个包中，否则代理类生成也会失败。最后，接口的数目不能超过 65535，这是 JVM 设定的限制。
+
+最后再来了解一下异常处理方面的特点。从调用处理器接口声明的方法中可以看到理论上它能够抛出任何类型的异常，因为所有的异常都继承于 Throwable 接口，但事实是否如此呢？答案是否定的，原因是==我们必须遵守一个继承原则：即子类覆盖父类或实现父接口的方法时，抛出的异常必须在原方法支持的异常列表之内。==所以虽然调用处理器理论上讲能够，但实际上往往受限制，除非父接口中的方法支持抛 Throwable 异常。==那么如果在 invoke 方法中的确产生了接口方法声明中不支持的异常==，那将如何呢？放心，Java 动态代理类已经为我们设计好了解决方法：==它将会抛出 UndeclaredThrowableException 异常。这个异常是一个 RuntimeException 类型，所以不会引起编译错误。通过该异常的 getCause 方法，还可以获得原来那个不受支持的异常对象，以便于错误诊断==。
+
+ 
+
+ 
+
+ 
+
+ 

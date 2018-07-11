@@ -48,6 +48,16 @@ Java 喊出的带有标志性的口号“ Write Once ， Run Anywhere （一次�
 
 finalize这个是方法名。在java中，允许使用finalize()方法在垃圾收集器将对象从内存中清理出去之前做必要的清理工作。这个方法是由垃圾收集器在确定这个对象没有被引用时对这个对象调用的。它是Object类中定义的，因此，所有的类都继承了它。finalize()方法是在垃圾收集器删除对象之前对这个对象调用的。
 
+特殊情况下，需要程序员实现finalize，当对象被回收的时候释放一些资源，比如：一个socket链接，在对象初始化时创建，整个生命周期内有效，那么就需要实现finalize，关闭这个链接。 使用finalize还需要注意一个事，调用super.finalize(); **一个对象的finalize()方法只会被调用一次，而且finalize()被调用不意味着gc会立即回收该对象，所以有可能调用finalize()后，该对象又不需要被回收了**，然后到了真正要被回收的时候，因为前面调用过一次，所以不会调用finalize()，产生问题。 一般来说，不推荐使用finalize()方法，它跟析构函数不一样。 
+
+
+
+## final, finally, finalize的区别
+
+- final 用于声明属性,方法和类, 分别表示属性不可变, 方法不可覆盖, 类不可继承.
+- finally 是异常处理语句结构的一部分，表示无论异常是否发生，都会执行finally块的内容 
+- finalize 是Object类的一个方法，这个方法是由垃圾收集器在确定这个对象没有被引用时对这个对象调用的。java技术允许使用finalize()方法在垃圾收集器将对象从内存中清除出去之前做必要的清理工作。可以覆盖此方法提供垃圾收集时的其他资源回收，例如关闭文件等. JVM不保证此方法总被调用.
+
  
 
 # Java 为什么是高效的 ( High Performance )?
@@ -1568,12 +1578,6 @@ EOFException （文件已结束异常）
 
 第二种异常是把异常抛给调用这个方法的模块去处理. 一般 Java 的库就是怎么处理的.
 
-# final, finally, finalize的区别
-
-- final 用于声明属性,方法和类, 分别表示属性不可变, 方法不可覆盖, 类不可继承.
-- finally 是异常处理语句结构的一部分，表示无论异常是否发生，都会执行finally块的内容 
-- finalize 是Object类的一个方法，这个方法是由垃圾收集器在确定这个对象没有被引用时对这个对象调用的。java技术允许使用finalize()方法在垃圾收集器将对象从内存中清除出去之前做必要的清理工作。可以覆盖此方法提供垃圾收集时的其他资源回收，例如关闭文件等. JVM不保证此方法总被调用.
-
 
 
 # 字节流与字符流
@@ -2055,6 +2059,108 @@ StringBuffer类是线程安全的，StringBuilder不是线程安全的；
 2、使用StringBuffer类时，每次都会对StringBuffer对象本身进行操作，而不是生成新的对象并改变对象引用，所以多数情况下推荐使用StringBuffer，特别是字符串对象经常要改变的情况；
 
 3、在某些情况下，String对象的字符串拼接其实是被Java Compiler编译成了StringBuffer对象的拼接，所以这些时候String对象的速度并不会比StringBuffer对象慢。
+
+### **String手动入池**
+
+　　**一个初始为空的字符串池，它由类 String 私有地维护。** 当调用 intern 方法时，如果池已经包含一个等于此 String 对象的字符串（用 equals(Object) 方法确定），则返回池中的字符串。否则，将此 String 对象添加到池中，并返回此 String 对象的引用。特别地，手动入池遵循以下规则：
+
+　　**对于任意两个字符串 s 和 t ，当且仅当 s.equals(t) 为 true 时，s.intern() == t.intern() 才为 true 。** 　　
+
+```
+public class TestString{
+    public static void main(String args[]){
+        String str1 = "abc";
+        String str2 = new String("abc");
+        String str3 = s2.intern();
+
+        System.out.println( str1 == str2 );   //false
+        System.out.println( str1 == str3 );   //true
+    }
+}12345678910
+```
+
+　　所以，对于 String str1 = “abc”，str1 引用的是 **常量池（方法区）** 的对象；而 String str2 = new String(“abc”)，str2引用的是 **堆** 中的对象，所以内存地址不一样。但是由于内容一样，所以 str1 和 str3 指向同一对象。
+
+### 注意
+
+**通过 new String(“…”) 来创建字符串时，在该构造函数的参数值为字符串字面值的前提下，若该字面值不在字符串常量池中，那么会创建两个对象：一个在字符串常量池中，一个在堆中；否则，只会在堆中创建一个对象。对于不在同一区域的两个对象，二者的内存地址必定不同。** 
+
+####  字符串连接符“+”
+
+```
+    String str2 = "ab";  //1个对象  
+    String str3 = "cd";  //1个对象                                         
+    String str4 = str2+str3;                                        
+    String str5 = "abcd";    
+    System.out.println("str4 = str5 : " + (str4==str5)); // false  12345
+```
+
+　　我们看这个例子，局部变量 str2，str3 指向字符串常量池中的两个对象。在运行时，**第三行代码(str2+str3)实质上会被分解成五个步骤，分别是：**
+
+　**(1). 调用 String 类的静态方法 String.valueOf() 将 str2 转换为字符串表示；**
+
+　**(2). JVM 在堆中创建一个 StringBuilder对象，同时用str2指向转换后的字符串对象进行初始化；**　
+
+　**(3). 调用StringBuilder对象的append方法完成与str3所指向的字符串对象的合并；**
+
+　**(4). 调用 StringBuilder 的 toString() 方法在堆中创建一个 String对象；**
+
+　**(5). 将刚刚生成的String对象的堆地址存赋给局部变量引用str4。**
+
+　　==而引用str5指向的是字符串常量池中字面值”abcd”所对应的字符串对象。由上面的内容我们可以知道，引用str4和str5指向的对象的地址必定不一样。这时，内存中实际上会存在五个字符串对象： 三个在字符串常量池中的String对象、一个在堆中的String对象和一个在堆中的StringBuilder对象。==
+
+####  字符串的编译期优化
+
+```
+    String str1 = "ab" + "cd";  //1个对象  
+    String str11 = "abcd";   
+    System.out.println("str1 = str11 : "+ (str1 == str11));   // true
+
+    final String str8 = "cd";  
+    String str9 = "ab" + str8;  
+    String str89 = "abcd";  
+    System.out.println("str9 = str89 : "+ (str9 == str89));     // true
+    //↑str8为常量变量，编译期会被优化  
+
+    String str6 = "b";  
+    String str7 = "a" + str6;  
+    String str67 = "ab";  
+    System.out.println("str7 = str67 : "+ (str7 == str67));     // false
+    //↑str6为变量，在运行期才会被解析。123456789101112131415
+```
+
+　　Java 编译器对于类似**“常量+字面值”的组合，其值在编译的时候就能够被确定了。**在这里，str1 和 str9 的值在编译时就可以被确定，因此它们分别等价于： String str1 = “abcd”; 和 String str9 = “abcd”;
+
+　　**Java 编译器对于含有 “String引用”的组合，则在运行期会产生新的对象 (通过调用StringBuilder类的toString()方法)，因此这个对象存储在堆中。**
+
+ **小结**
+
+- **使用字面值形式创建的字符串与通过 new 创建的字符串一定是不同的，因为二者的存储位置不同：前者在方法区，后者在堆；**
+- 我们在使用诸如String str = “abc”；的格式创建字符串对象时，总是想当然地认为，我们创建了String类的对象str。但是事实上， **对象可能并没有被创建。唯一可以肯定的是，指向 String 对象 的引用被创建了。**至于这个引用到底是否指向了一个新的对象，必须根据上下文来考虑；
+- **字符串常量池的理念是 《享元模式》；**
+- **Java 编译器对 “常量+字面值” 的组合 是当成常量表达式直接求值来优化的；对于含有“String引用”的组合，其在编译期不能被确定，会在运行期创建新对象。**
+
+**String 在克隆中的特殊性**
+
+　　**String 在克隆时只是克隆了它的引用。**
+
+　　奇怪的是，在修改克隆后的 String 对象时，其原来的对象并未改变。原因是：**String是在内存中不可以被改变的对象**。虽然在克隆时，源对象和克隆对象都指向了同一个String对象，但当其中一个对象修改这个String对象的时候，会新分配一块内存用来保存修改后的String对象并将其引用指向新的String对象，而原来的String对象因为还存在指向它的引用，所以不会被回收。这样，对于String而言，虽然是复制的引用，但是当修改值的时候，并不会改变被复制对象的值。**所以在使用克隆时，我们可以将 String类型 视为与基本类型，只需浅克隆即可。**
+
+## String 总结
+
+(1). 使用字面值形式创建字符串时，不一定会创建对象，但其引用一定指向位于字符串常量池的某个对象；
+
+(2). 使用 new String(“…”)方式创建字符串时，一定会创建对象，甚至可能会同时创建两个对象（一个位于字符串常量池中，一个位于堆中）；
+
+(3). String 对象是不可变的，对String 对象的任何改变都会导致一个新的 String 对象的产生，而不会影响到原String 对象；
+
+(4). StringBuilder 与 StringBuffer 具有共同的父类，具有相同的API，分别适用于单线程和多线程环境下。特别地，在单线程环境下，StringBuilder 是 StringBuffer 的替代品，前者效率相对较高；
+
+------
+
+(5). **字符串比较时用的什么方法，内部实现如何？**
+
+　　使用equals方法 ： **先比较引用是否相同(是否是同一对象)，再检查是否为同一类型（str instanceof String）， 最后比较内容是否一致（String 的各个成员变量的值或内容是否相同）。****这也同样适用于诸如 Integer 等的八种包装器类。**
 
 # Java创建数组的几种方式
 
