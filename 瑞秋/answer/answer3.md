@@ -4,12 +4,12 @@
 
 -  在Java中任何一个对象都具备equals(Object obj)和hashcode()这两个方法，因为他们是在Object类中定义的。  
 - equals(Object obj)方法用来判断两个对象是否“相同”，如果“相同”则返回true，否则返回false。  
-- hashcode()方法返回一个int数，在Object类中的默认实现是“将该对象的内部地址转换成一个整数返回”。  
+- ==hashcode()方法返回一个int数，在Object类中的默认实现是“将该对象的内部地址转换成一个整数返回”。==  
 
 接下来有两个个关于这两个方法的重要规范(我只是抽取了最重要的两个,其实不止两个)： 
 
-- 规范1：若重写equals(Object obj)方法，有必要重写hashcode()方法，确保通过equals(Object obj)方法判断结果为true的两个对象具备相等的hashcode()返回值。说得简单点就是：“如果两个对象相同，那么他们的hashcode应该 相等”。不过请注意：这个只是规范，如果你非要写一个类让equals(Object obj)返回true而hashcode()返回两个不相等的值，编译和运行都是不会报错的。不过这样违反了Java规范，程序也就埋下了BUG。  
-- 规范2：如果equals(Object obj)返回false，即两个对象“不相同”，并不要求对这两个对象调用hashcode()方法得到两个不相同的数。说的简单点就是：“如果两个对象不相同，他们的hashcode可能相同”。  
+- ==规范1：若重写equals(Object obj)方法，有必要重写hashcode()方法，确保通过equals(Object obj)方法判断结果为true的两个对象具备相等的hashcode()返回值==。说得简单点就是：“如果两个对象相同，那么他们的hashcode应该 相等”。不过请注意：这个只是规范，如果你非要写一个类让equals(Object obj)返回true而hashcode()返回两个不相等的值，编译和运行都是不会报错的。不过这样违反了Java规范，程序也就埋下了BUG。  
+- ==规范2：如果equals(Object obj)返回false，即两个对象“不相同”，并不要求对这两个对象调用hashcode()方法得到两个不相同的数。==说的简单点就是：“如果两个对象不相同，他们的hashcode可能相同”。  
 
 根据这两个规范，可以得到如下推论： 
 
@@ -18,13 +18,13 @@
 - 3、如果两个对象hashcode相等，他们不一定equals。
 -   4、如果两个对象hashcode不相等，他们一定不equals。
 
-**简而言之，在集合查找时，hashcode能大大降低对象比较次数，提高查找效率！** 
+==**简而言之，在集合查找时，hashcode能大大降低对象比较次数，提高查找效率！**== 
 
 **当equals()方法被重写时，通常需要重写 hashCode 方法，以维护在hashCode 方法最开始的声明，即相等对象必须具有相等的哈希码。** 
 
 **object类中的hashcode()方法是一个本地方法，==比较的是引用对象的内存地址==，使用new方法创建对象，两次生成的是不同的对象，造成的结果就是两个对象的hashcode()返回的值不一样 。**
 
-**Integer（基本类型）的equals实际上都是用的自己的实际值比较，String则是逐个char比较相等于否。** 
+==**Integer（基本类型）的equals实际上都是用的自己的实际值比较，String则是逐个char比较相等于否。**== 
 
 ## 花边：通用的hashCode重写方案
 
