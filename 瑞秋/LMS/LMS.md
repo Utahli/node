@@ -10,26 +10,24 @@
 
 要深入理解集合首先要了解下我们熟悉的数组：
 
-**数组**是大小固定的，并且同一个数组只能存放类型一样的数据（基本类型/引用类型），而JAVA集合可以存储和操作数目不固定的一组数据。 所有的JAVA集合都位于 java.util包中！ ==JAVA集合只能存放引用类型的数据，不能存放基本数据类型。==
+==**数组**是大小固定的，并且同一个数组只能存放类型一样的数据（基本类型/引用类型），而JAVA集合可以存储和操作数目不固定的一组数据。 所有的JAVA集合都位于 java.util包中！ **JAVA集合只能存放引用类型的数据，不能存放基本数据类型。**==
 
 ==简单说下集合和数组的区别：==(参考文章：[《Thinking In Algorithm》03.数据结构之数组](http://blog.csdn.net/speedme/article/details/18180817))
 
- ```java
-而几乎有有的集合都是基于数组来实现的.  
-因为集合是对数组做的封装,所以,数组永远比任何一个集合要快  
-  
-但任何一个集合,比数组提供的功能要多  
-  
-一：数组声明了它容纳的元素的类型，而集合不声明。这是由于集合以object形式来存储它们的元素。  
-   
-二：一个数组实例具有固定的大小，不能伸缩。集合则可根据需要动态改变大小。  
-   
-三：数组是一种可读/可写数据结构－－－没有办法创建一个只读数组。然而可以使用集合提供的ReadOnly方法，以只读方式来使用集合。该方法将返回一个集合的只读版本。
- ```
+==而几乎有有的集合都是基于数组来实现的.==  
+==因为集合是对数组做的封装,所以,数组永远比任何一个集合要快==  
+
+==但任何一个集合,比数组提供的功能要多==  
+
+==一：数组声明了它容纳的元素的类型，而集合不声明。这是由于集合以object形式来存储它们的元素。==  
+
+==二：一个数组实例具有固定的大小，不能伸缩。集合则可根据需要动态改变大小。==  
+
+==三：数组是一种可读/可写数据结构－－－没有办法创建一个只读数组。然而可以使用集合提供的ReadOnly方法，以只读方式来使用集合。该方法将返回一个集合的只读版本。==
 
 Java所有“存储及随机访问一连串对象”的做法，array是最有效率的一种。
 
-1. 效率高，但容量固定且无法动态改变；array还有一个缺点是，无法判断其中实际存有多少元素，length只是告诉我们array的容量。
+1. ==效率高，但容量固定且无法动态改变；array还有一个缺点是，无法判断其中实际存有多少元素，length只是告诉我们array的容量。==
 
 
 2. Java中有一个**Arrays类，专门用来操作array**。
@@ -43,21 +41,32 @@ System.arraycopy()：array的复制。
 
 若撰写程序时不知道究竟需要多少对象，需要在空间不足时自动扩增容量，则需要使用容器类库，array不适用。所以就要用到集合。
 
-那我们开始讨论java中的集合。
+*  ==List，Set，Map将持有对象一律视为Object型别。==
+*  ==Collection、List、Set、Map都是接口，不能实例化。== 
+*  容器类仅能持有对象引用（指向对象的指针），而不是将对象信息copy一份至数列某位置。 *  一旦将对象置入容器内，便损失了该对象的型别信息。 
 
-### 集合分类：
+==1、Collection没有get()方法 来取得某个元素。只能通过iterator()遍历元素。==
 
-Collection：List、Set
-Map：HashMap、HashTable
+ ==2、Set 和Collection拥有一模一样的接口。== 
+
+3、List ，可以通过get()方法来一次取出一个元素 。使用数字来选择一堆对象中的一个，get(0)…。(add/get) 
+
+4、==一般使用ArrayList。用LinkedList构造堆栈stack、队列queue 。== 
+
+==**Map中元素，可以将key序列、value序列单独抽取出来。**使用keySet() 抽取key序列，将map中的所有keys生成一个Set。 使用values( ) 抽取value序列，将map中的所有values生成一个Collection。== 
+
+
 
 # Interface Iterable
 
 ==迭代器接口，这是Collection类的父接口。实现这个Iterable接口的对象允许使用foreach进行遍历，也就是说，所有的Collection集合对象都具有"foreach可遍历性"。这个Iterable接口只==
 ==有一个方法: iterator()。它返回一个代表当前集合对象的泛型<T>迭代器，用于之后的遍历操作==
 
-## 1.1 Collection接口
+## 一、Collection 接口
 
-Collection是最基本的集合接口，声明了适用于JAVA集合（只包括Set和List）的通用方法。 Set 和List 都继承了Conllection,Map。
+Collection 接口是最基本的集合接口，它不提供直接的实现，Java SDK提供的类都是继承自 Collection 的“子接口”如 List 和 Set。Collection 所代表的是一种规则，它所包含的元素都必须遵循一条或者多条规则。如有些允许重复而有些则不能重复、有些必须要按照顺序插入而有些则是散列，有些支持排序但是有些则不支持。
+
+在 Java 中所有实现了 Collection 接口的类都必须提供两套标准的构造函数，一个是无参，用于创建一个空的 Collection，一个是带有 Collection 参数的有参构造函数，用于创建一个新的 Collection，这个新的 Collection 与传入进来的 Collection 具备相同的元素。
 
 ### 1.1.1  Collection接口的方法（8个）：
 
@@ -87,55 +96,15 @@ Object[] toArray()    ： 返回一个数组，该数组中包括集合中的所
 
 ```java
 hasNext()：判断集合中元素是否遍历完毕，如果没有，就返回true   
-  
-next() ：返回下一个元素   
-  
+next() ：返回下一个元素
 remove()：从集合中删除上一个有next()方法返回的元素。 
 ```
 
-## 1.2  Set(集合)
-
-![1531329167493](D:\workspace\Github\node\瑞秋\LMS\assets\1531329167493.png)
-
-Set是最简单的一种集合。==集合中的对象不按特定的方式排序，并且没有重复对象。== 在使用Set集合的时候，应该注意两点：
-
-**1) 为Set集合里的元素的实现类实现一个有效的equals(Object)方法、**
-
-**2) 对Set的构造函数，传入的Collection参数不能包含重复的元素**
-
-Set接口主要实现了两个实现类：
-
-- HashSet： HashSet类按照哈希算法来存取集合中的对象，存取速度比较快 
-- TreeSet ：TreeSet类实现了SortedSet接口，能够对集合中的对象进行排序。  
 
 
+## 二、List 接口
 
-### Set的功能方法
-
-==Set : 存入Set的每个元素都必须是唯一的，因为Set不保存重复元素。加入Set的元素必须定义equals()方法以确保对象的唯一性。Set与Collection有完全一样的接口。Set接口不保证维护元素的次序。== 
-
-#### 1.1) HashSet
-
-​     **HashSet是Set接口的典型实现，==HashSet使用HASH算法来存储集合中的元素（底层实现为HashMap），==因此具有良好的存取和查找性能。**
-     值得主要的是，HashSet集合判断两个元素相等的标准是两个对象通过equals()方法比较相等，并且两个对象的hashCode()方法的返回值相等
-
-#### 1.1.1) LinkedHashSet
-
-​         ==**LinkedHashSet集合也是根据元素的hashCode值来决定元素的存储位置，但和HashSet不同的是，它同时使用链表维护元素的次序，这样使得元素看起来是以插入的顺序保存的。**==
-　　当遍历LinkedHashSet集合里的元素时，LinkedHashSet将会按元素的添加顺序来访问集合里的元素。
-        LinkedHashSet需要维护元素的插入顺序，因此性能略低于HashSet的性能，但在迭代访问Set里的全部元素时(遍历)将有很好的性能(链表很适合进行遍历)
-
-## 1.2) SortedSet
-
-​     **此接口主要用于排序操作，即实现此接口的子类都属于排序的子类**
-         1.2.1) TreeSet
-         TreeSet是SortedSet接口的实现类，TreeSet可以确保集合元素处于排序状态
-    	 1.3) EnumSet
-     EnumSet是一个专门为枚举类设计的集合类，EnumSet中所有元素都必须是指定枚举类型的枚举值，该枚举类型在创建EnumSet时显式、或隐式地指定。EnumSet的集合元素也是有序的，它们以枚举值在Enum类内的定义顺序来决定集合元素的顺序
-
- 
-
-## 1.3  List(列表)
+List 接口为 Collection 直接接口。List 所代表的是有序的 Collection，即它用某种特定的插入顺序来维护元素顺序。用户可以对列表中每个元素的插入位置进行精确地控制，同时可以根据元素的整数索引（在列表中的位置）访问元素，并搜索列表中的元素。实现 List 接口的集合主要有：ArrayList、LinkedList、Vector、Stack。
 
 ==List的特征是其元素以线性方式存储，集合中可以存放重复对象。== 
 
@@ -143,72 +112,143 @@ Set接口主要实现了两个实现类：
 
 
 
-### List接口主要实现类包括：
-
-- ArrayList() : 代表长度可以改变得数组。可以对元素进行随机的访问，向ArrayList()中插入与删除元素的速度慢。 
-- LinkedList(): 在实现中采用链表数据结构。插入和删除速度快，访问速度慢。 
-
 对于List的随机访问来说，就是只随机来检索位于特定位置的元素。 List 的 get(int index) 方法放回集合中由参数index指定的索引位置的对象，下标从“0” 开始。
 
-### List的功能方法 
+### 2.1、ArrayList
 
-实际上有两种List：一种是基本的ArrayList,其优点在于随机访问元素，另一种是更强大的LinkedList,它并不是为快速随机访问设计的，而是具有一套更通用的方法。
+ArrayList 是一个动态数组，可以对元素进行随机的访问，也是我们最常用的集合。它允许任何符合规则的元素插入甚至包括 null。每一个 ArrayList 都有一个初始容量（10），该容量代表了数组的大小。随着容器中的元素不断增加，容器的大小也会随着增加。在每次向容器中增加元素的同时都会进行容量检查，当快溢出时，就会进行扩容操作。所以如果我们明确所插入元素的多少，最好指定一个初始容量值，避免过多的进行扩容操作而浪费时间、效率。
 
-- List：次序是List最重要的特点：它保证维护元素特定的顺序。List为Collection添加了许多方法，使得能够向List中间插入与移除元素(这只推 荐LinkedList使用。)一个List可以生成ListIterator,使用它可以从两个方向遍历List,也可以从List中间插入和移除元 素。 
-- ArrayList：由数组实现的List。允许对元素进行快速随机访问，但是向List中间插入与移除元素的速度很慢。ListIterator只应该用来由后向前遍历 ArrayList,而不是用来插入和移除元素。因为那比LinkedList开销要大很多。 
-- LinkedList ：对顺序访问进行了优化，向List中间插入与删除的开销并不大。随机访问则相对较慢。(使用ArrayList代替。)还具有下列方 法：addFirst(), addLast(), getFirst(), getLast(), removeFirst() 和 removeLast(), 这些方法 (没有在任何接口或基类中定义过)使得LinkedList可以当作堆栈、队列和双向队列使用。
+ArrayList 擅长于随机访问。同时 ArrayList 是非同步的。
 
- Queue
+==ArrayList 是一个数组队列，相当于动态数组。它由数组实现，随机访问效率高，随机插入、随机删除效率低。== 
 
- Queue用于模拟"队列"这种数据结构(先进先出 FIFO)。队列的头部保存着队列中存放时间最长的元素，队列的尾部保存着队列中存放时间最短的元素。新元素插入(offer)到队列的尾部，
-　　 访问元素(poll)操作会返回队列头部的元素，队列不允许随机访问队列中的元素。结合生活中常见的排队就会很好理解这个概念
-     3.1) PriorityQueue
-     PriorityQueue并不是一个比较标准的队列实现，PriorityQueue保存队列元素的顺序并不是按照加入队列的顺序，而是按照队列元素的大小进行重新排序，这点从它的类名也可以看出来
-     3.2) Deque
-     Deque接口代表一个"双端队列"，双端队列可以同时从两端来添加、删除元素，因此Deque的实现类既可以当成队列使用、也可以当成栈使用
-         3.2.1) ArrayDeque
-         是一个基于数组的双端队列，和ArrayList类似，它们的底层都采用一个动态的、可重分配的Object[]数组来存储集合元素，当集合元素超出该数组的容量时，系统会在底层重新分配一个Object[]数组来存储集合元素
-         3.2.2) LinkedList
+**优点**：ArrayList是实现了基于动态数组的数据结构,因为地址连续，一旦数据存储好了，查询操作效率会比较高（在内存里是连着放的）。
 
-## 1.4 Map(映射)
+**缺点**：因为地址连续， ArrayList要移动数据,所以插入和删除操作效率比较低。 
 
-Map 是一种把键对象和值对象映射的集合，它的每一个元素都包含一对键对象和值对象。 Map没有继承于Collection接口 从Map集合中检索元素时，只要给出键对象，就会返回对应的值对象。 
+### 2.2、LinkedList
+
+同样实现 List 接口的 LinkedList 与 ArrayList 不同，==ArrayList是一个动态数组，而 LinkedList 是一个双向链表。所以它除了有 ArrayList 的基本操作方法外还额外提供了 get，remove，insert 方法在 LinkedList 的首部或尾部。==
+
+==由于实现的方式不同，LinkedList 不能随机访问，它所有的操作都是要按照双重链表的需要执行。在列表中索引的操作将从开头或结尾遍历列表（从靠近指定索引的一端）。这样做的好处就是可以通过较低的代价在 List 中进行插入和删除操作。==
+
+==与 ArrayList 一样，LinkedList 也是非同步的。如果多个线程同时访问一个 List，则必须自己实现访问同步。一种解决方法是在创建 List 时构造一个同步的 List：==
+
+==List list = Collections.synchronizedList(new LinkedList(…));==
+
+==LinkedList 是一个双向链表。它也可以被当作堆栈、队列或双端队列进行操作。LinkedList随机访问效率低，但随机插入、随机删除效率高。== 
+
+**优点**：LinkedList基于链表的数据结构,地址是任意的，所以在开辟内存空间的时候不需要等一个连续的地址，对于新增和删除操作add和remove，LinedList比较占优势。LinkedList 适用于要头尾操作或插入指定位置的场景
+
+**缺点**：因为LinkedList要移动指针,所以查询操作性能比较低。
+
+### 2.3、Vector
+
+==与 ArrayList 相似，但是 Vector 是同步的。所以说 Vector 是线程安全的动态数组。它的操作与 ArrayList 几乎一样。==
+
+Vector 是矢量队列，和ArrayList一样，它也是一个动态数组，由数组实现。但是ArrayList是非线程安全的，而Vector是线程安全的。 Vector 是同步的，这意味着它适用于线程安全的操作，但是在多线程环境下的性能很差。如果不需要线程安全的操作，建议用ArrayList代替 Vector (ArrayList 是非同步的，有更好的性能)。 
+
+### 2.4、Stack
+
+==Stack 继承自 Vector，实现一个后进先出的堆栈。Stack 提供 5 个额外的方法使得 Vector 得以被当作堆栈使用。基本的 push 和 pop 方法，还有 peek 方法得到栈顶的元素，empty 方法测试堆栈是否为空，search 方法检测一个元素在堆栈中的位置。Stack 刚创建后是空栈。==
+
+## 三、Set 接口
+
+==Set 是一种不包括重复元素的 Collection。它维持它自己的内部排序，所以随机访问没有任何意义。与 List 一样，它同样允许 null 的存在但是仅有一个。==由于 Set 接口的特殊性，所有传入 Set 集合中的元素都必须不同，同时要注意任何可变对象，如果在对集合中元素进行操作时，导致e1.equals(e2)==true，则必定会产生某些问题。实现了 Set 接口的集合有：EnumSet、HashSet、TreeSet。
+
+==Set : 存入Set的每个元素都必须是唯一的，因为Set不保存重复元素。加入Set的元素必须定义equals()方法以确保对象的唯一性。Set与Collection有完全一样的接口。Set接口不保证维护元素的次序。== 
+
+![1531329167493](D:\workspace\Github\node\瑞秋\LMS\assets\1531329167493.png)
+
+Set是最简单的一种集合。==集合中的对象不按特定的方式排序，并且没有重复对象。== 在使用Set集合的时候，应该注意两点：
+
+==**1) 为Set集合里的元素的实现类实现一个有效的equals(Object)方法、**==
+
+==**2) 对Set的构造函数，传入的Collection参数不能包含重复的元素**==
+
+#### 1.1) HashSet
+
+​     **HashSet是Set接口的典型实现，==HashSet使用HASH算法来存储集合中的元素（底层实现为HashMap），==因此具有良好的存取和查找性能。**
+
+HashSet 堪称查询速度最快的集合，因为其内部是以 HashCode 来实现的。它内部元素的顺序是由哈希码来决定的，所以它不保证 set 的迭代顺序；特别是它不保证该顺序恒久不变。
+
+- HashSet 不允许存在重复值，如果添加了重复值。老的值将会被覆盖。
+- HashSet 不保证迭代的顺序随时间保持不变，元素按随机顺序返回。
+- HashSet 允许有 NUll 值。
+- ==HashSet 是非同步的，但是可以显示的设置为同步的：Set s = Collections.synchronizedSet(new HashSet(…))==
+
+#### 1.1.1) LinkedHashSet
+
+​         ==**LinkedHashSet集合也是根据元素的hashCode值来决定元素的存储位置，但和HashSet不同的是，它同时使用链表维护元素的次序，这样使得元素看起来是以插入的顺序保存的。**==
+　　当遍历LinkedHashSet集合里的元素时，LinkedHashSet将会按元素的添加顺序来访问集合里的元素。
+        LinkedHashSet需要维护元素的插入顺序，因此性能略低于HashSet的性能，但在迭代访问Set里的全部元素时(遍历)将有很好的性能(链表很适合进行遍历)
+
+#### 1.2) SortedSet
+
+​     **此接口主要用于排序操作，即实现此接口的子类都属于排序的子类**
+         1.2.1) TreeSet
+         TreeSet是SortedSet接口的实现类，TreeSet可以确保集合元素处于排序状态
+
+==基于 TreeMap，生成一个总是处于排序状态的 set，内部以 TreeMap 来实现。==它是使用元素的自然顺序对元素进行排序，或者根据创建 Set 时提供的 `Comparator` 进行排序，具体取决于使用的构造方法。
+
+- TreeSet 与 HashSet 很相似，但 HashSet 并不保证 Set 的迭代顺序，但 TreeSet 在遍历集合时按照 升序排序。所以对于 add，remove，contains，size等这样的操作，HashSet 比 TreeSet 有更好的性能， HashSet 消耗的时间是常数级别的，而 TreeSet 是 log(n)
+- ==TreeSet 是非同步的，但是也可以显示的指定为同步的：SortedSet s = Collections.synchronizedSortedSet(new TreeSet(…))==
+
+	    	 1.3) EnumSet
+     EnumSet是一个专门为枚举类设计的集合类，EnumSet中所有元素都必须是指定枚举类型的枚举值，该枚举类型在创建EnumSet时显式、或隐式地指定。EnumSet的集合元素也是有序的，它们以枚举值在Enum类内的定义顺序来决定集合元素的顺序
+
+#### LinkedHashSet
+
+LinkedHashSet 与 TreeSet 和 HashSet 很相似，除了以下几点不同：
+
+1. hashSet 不保证 Set 的迭代顺序；
+2. TreeSet 按照升序排序元素；
+3. LinkedHashSet 会按照插入的顺序排序，输出的顺序与插入时的顺序相同；
+
+## 四、Map 接口
+
+==Map 与 List、Set 接口不同，它是由一系列键值对组成的集合，提供了 key 到 Value 的映射。同时它也没有继承 Collection。在 Map 中它保证了 key 与 value 之间的一一对应关系，一个 key 对应一个 value，不能存在相同的 key 值，value 值可以相同。==实现 map 的有：HashMap、TreeMap、HashTable、Properties、EnumMap。
 
 Map 的常用方法： 
 
-1.  **添加，删除操作：** 
+1. **添加，删除操作：** 
 
-   ```java
+```java
 Object put(Object key, Object value)： 向集合中加入元素   
 Object remove(Object key)： 删除与KEY相关的元素   
 void putAll(Map t)：  将来自特定映像的所有元素添加给该映像   
 void clear()：从映像中删除所有映射 
-   ```
+```
 
 ![1531329316033](D:\workspace\Github\node\瑞秋\LMS\assets\1531329316033.png)
 
-2. **查询操作：** 
+### 4.1、HashMap
 
-Object get(Object key)：获得与关键字key相关的值 。Map集合中的键对象不允许重复，也就说，任意两个键对象通过equals()方法比较的结果都是false.，但是可以将任意多个键独享映射到同一个值对象上。 
+==以哈希表数据结构实现，查找对象时通过哈希函数计算其位置，它是为快速查询而设计的，其内部定义了一个 hash 表数组（Entry[] table），元素会通过哈希转换函数将元素的哈希地址转换成数组中存放的索引，如果有冲突，则使用散列链表的形式将所有相同哈希地址的元素串起来，可能通过查看 HashMap.Entry 的源码它是一个单链表结构。==
 
- 
+==HashMap就是使用对象的hashCode()进行快速查询的。此方法能够显着提高性能。== 
 
-### Map的功能方法
+- ==不保证迭代的顺序；==
+- ==非同步的；==
+- ==允许有null值和null键；==
 
-1. 方法put(Object key, Object value)添加一个“值”(想要得东西)和与“值”相关联的“键”(key)(使用它来查找)。方法get(Object key)返回与给定“键”相关联的“值”。可以用containsKey()和containsValue()测试Map中是否包含某个“键”或“值”。 标准的Java类库中包含了几种不同的Map：HashMap, TreeMap, LinkedHashMap, WeakHashMap, IdentityHashMap。它们都有同样的基本接口Map，但是行为、效率、排序策略、保存对象的生命周期和判定“键”等价的策略等各不相同。 
-2. 执行效率是Map的一个大问题。看看get()要做哪些事，就会明白为什么在ArrayList中搜索“键”是相当慢的。而这正是HashMap提高速 度的地方。HashMap使用了特殊的值，称为“散列码”(hash code)，来取代对键的缓慢搜索。“散列码”是“相对唯一”用以代表对象的int值，它是通过将该对象的某些信息进行转换而生成的。所有Java对象都 能产生散列码，因为hashCode()是定义在基类Object中的方法。 
-3. HashMap就是使用对象的hashCode()进行快速查询的。此方法能够显着提高性能。 
-4. Map : 维护“键值对”的关联性，使你可以通过“键”查找“值”
-5. HashMap：Map基于散列表的实现。插入和查询“键值对”的开销是固定的。可以通过构造器设置容量capacity和负载因子load factor，以调整容器的性能。 
-6. LinkedHashMap： 类似于HashMap，但是迭代遍历它时，取得“键值对”的顺序是其插入次序，或者是最近最少使用(LRU)的次序。只比HashMap慢一点。而在迭代访问时发而更快，因为它使用链表维护内部次序。 
-7. TreeMap ： 基于红黑树数据结构的实现。查看“键”或“键值对”时，它们会被排序(次序由Comparabel或Comparator决定)。TreeMap的特点在 于，你得到的结果是经过排序的。TreeMap是唯一的带有subMap()方法的Map，它可以返回一个子树。 
-8. WeakHashMao ：弱键(weak key)Map，Map中使用的对象也被允许释放: 这是为解决特殊问题设计的。如果没有map之外的引用指向某个“键”，则此“键”可以被垃圾收集器回收。 
-9. IdentifyHashMap： : 使用==代替equals()对“键”作比较的hash map。专为解决特殊问题而设计。
+### 4.2、TreeMap
 
- 1.1) LinkedHashMap
+==TreeMap ： 基于红黑树数据结构的实现，实现了 SortedMap 接口，键以某种排序规则排序。查看“键”或“键值对”时，它们会被排序(次序由Comparabel或Comparator决定)。TreeMap的特点在 于，你得到的结果是经过排序的。TreeMap是唯一的带有subMap()方法的Map，它可以返回一个子树。== 
 
-​     LinkedHashMap也使用双向链表来维护key-value对的次序，该链表负责维护Map的迭代顺序，与key-value对的插入顺序一致(注意和TreeMap对所有的key-value进行排序进行区
-分)
+由于 TreeMap 需要维持内部元素的顺序，所以它通常要比 HashMap 和 HashTable 慢。
+
+- TreeMap 是按照键值升序排列的
+- 不允许键对象是null
+- 是非同步的
+
+#### LinkedHashMap
+
+==LinkedHashMap也使用双向链表来维护key-value对的次序，该链表负责维护Map的迭代顺序，与key-value对的插入顺序一致(注意和TreeMap对所有的key-value进行排序进行区分)==
+
+### 4.3、HashTable
+
+也是以哈希表数据结构实现的，解决冲突时与 HashMap 也一样也是采用了散列链表的形式，不过性能比 HashMap 要低
 
 ### 3) SortedMap
 
@@ -231,29 +271,163 @@ Object get(Object key)：获得与关键字key相关的值 。Map集合中的键
  EnumMap是一个与枚举类一起使用的Map实现，EnumMap中的所有key都必须是单个枚举类的枚举值。创建EnumMap时必须显式或隐式指定它对应的枚举类。EnumMap根据key的自然顺序
 　　(即枚举值在枚举类中的定义顺序)
 
+## 五、Queue
+
+队列，它主要分为两大类，一类是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括 ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。另一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。
+
+ Queue
+
+ Queue用于模拟"队列"这种数据结构(先进先出 FIFO)。队列的头部保存着队列中存放时间最长的元素，队列的尾部保存着队列中存放时间最短的元素。新元素插入(offer)到队列的尾部，
+　　 访问元素(poll)操作会返回队列头部的元素，队列不允许随机访问队列中的元素。结合生活中常见的排队就会很好理解这个概念
+     3.1) PriorityQueue
+     PriorityQueue并不是一个比较标准的队列实现，PriorityQueue保存队列元素的顺序并不是按照加入队列的顺序，而是按照队列元素的大小进行重新排序，这点从它的类名也可以看出来
+     3.2) Deque
+     Deque接口代表一个"双端队列"，双端队列可以同时从两端来添加、删除元素，因此Deque的实现类既可以当成队列使用、也可以当成栈使用
+         3.2.1) ArrayDeque
+         是一个基于数组的双端队列，和ArrayList类似，它们的底层都采用一个动态的、可重分配的Object[]数组来存储集合元素，当集合元素超出该数组的容量时，系统会在底层重新分配一个Object[]数组来存储集合元素
+         3.2.2) LinkedList
 
 
-## 1.4 区别
 
-### **1.4.1、Collection 和 Map 的区别**
+## 六、异同点
 
-容器内每个为之所存储的元素个数不同。
-Collection类型者，每个位置只有一个元素。
-Map类型者，持有 key-value pair，像个小型数据库。
 
-### **1.4.2、各自旗下的子类关系**
 
-**Collection**    
+### 6.1、Vector 和 ArrayList
 
-​	 --List：将以特定次序存储元素。所以取出来的顺序可能和放入顺序不同。
-           	--ArrayList / LinkedList / Vector
-     	--Set ： 不能含有重复的元素
-           	--HashSet / TreeSet
+1，==vector 是线程同步的，所以它也是线程安全的，而 arraylist 是线程异步的，是不安全的。==如果不考虑到线程的安全因素，一般用 arraylist 效率比较高。
 
-**Map**
-	--HashMap
-	--HashTable
-	--TreeMap
+2，==如果集合中的元素的数目大于目前集合数组的长度时，vector 增长率为目前数组长度的 100%,而 arraylist 增长率为目前数组长度的 50%.如过在集合中使用数据量比较大的数据，用 vector 有一定的优势。==
+
+3，如果查找一个指定位置的数据，vector 和 arraylist 使用的时间是相同的，都是 0(1),这个时候使用 vector 和 arraylist 都可以。而如果移动一个指定位置的数据花费的时间为 0(n-i)n 为总长度，这个时候就应该考虑到使用 linklist,因为它移动一个指定位置的数据所花费的时间为 0(1),而查询一个指定位置的数据时花费的时间为 0(i)。
+
+ArrayList 和 Vector 是采用数组方式存储数据，此数组元素数大于实际存储的数据以便增加和插入元素，都允许直接序号索引元素，但是插入数据要设计到数组元素移动等内存操作，所以索引数据快插入数据慢，Vector 由于使用了 synchronized 方法（线程安全）所以性能上比 ArrayList 要差，LinkedList 使用双向链表实现存储，按序号索引数据需要进行向前或向后遍历，但是插入数据时只需要记录本项的前后项即可，所以插入数度较快！
+
+### 6.2、Aarraylist 和 Linkedlist
+
+1.==ArrayList 是实现了基于动态数组的数据结构，LinkedList 基于链表的数据结构。==
+
+2.==对于随机访问 get 和 set，ArrayList 觉得优于 LinkedList，因为 LinkedList 要移动指针。==
+
+3.==对于新增和删除操作 add 和 remove，LinedList 比较占优势，因为 ArrayList 要移动数据。==
+
+这一点要看实际情况的。若只对单条数据插入或删除，ArrayList 的速度反而优于 LinkedList。但若是批量随机的插入删除数据，LinkedList 的速度大大优于 ArrayList. 因为 ArrayList 每插入一条数据，要移动插入点及之后的所有数据。
+
+### ## ArrayList 和 Vector
+
+==这两个类都实现了List接口(List接口继承了Collection接口).==
+
+他们都是有序集合,即存储在这两个集合中的元素的位置都是有顺序的,相当于一种动态的数组，并且其中的数据是允许重复的
+
+ArrayList与Vector的区别
+
+- ==Vector的方法都是同步的(Synchronized), 是线程安全的, 也就是线程同步的, 而ArrayList是线程序不安全的==
+- ==ArrayList与Vector都有一个初始的容量大小, 当存储进它们里面的元素的个数超过了容量时, 就需要增加ArrayList与Vector的存储空间, Vector默认增长为原来两倍,而ArrayList的增长策略在文档中没有明确规定（从源代码看到的是增长为原来的1.5倍）.ArrayList与Vector都可以设置初始的空间大小, Vector还可以设置增长的空间大小, 而ArrayList没有提供设置增长空间的方法.==
+
+==**总结：即Vector增长原来的一倍,ArrayList增加原来的0.5倍. Vector 线程安全, ArrayList 不是.**==
+
+### 6.3、HashMap 与 TreeMap
+
+1、==HashMap 通过 hashcode 对其内容进行快速查找，而 TreeMap 中所有的元素都保持着某种固定的顺序，如果你需要得到一个有序的结果你就应该使用 TreeMap（HashMap 中元素的排列顺序是不固定的）。HashMap 中元素的排列顺序是不固定的。==
+
+3、==使用 HashMap 要求添加的键类明确定义了 hashCode() 和 equals() 的实现。TreeMap 没有调优选项，因为该树总处于平衡状态。==
+
+### HashSet与Treeset的适用场景
+
+1. ==TreeSet 是二差树（红黑树的树据结构）实现的,Treeset中的数据是自动排好序的，不允许放入null值== 
+2. HashSet 是哈希表实现的,HashSet中的数据是无序的，可以放入null，但只能放入一个null，两者中的值都不能重复，就如数据库中唯一约束 
+3. HashSet要求放入的对象必须实现HashCode()方法，放入的对象，是以hashcode码作为标识的，而具有相同内容的String对象，hashcode是一样，所以放入的内容不能重复。但是同一个类的对象可以放入不同的实
+
+### 6.4、hashtable 与 hashmap
+
+1. HashMap几乎可以等价于Hashtable，除了HashMap是非synchronized的，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行)。
+2. HashMap是非synchronized，而Hashtable是synchronized，这意味着Hashtable是线程安全的，多个线程可以共享一个Hashtable；而如果没有正确的同步的话，多个线程是不能共享HashMap的。Java 5提供了ConcurrentHashMap，它是HashTable的替代，比HashTable的扩展性更好。
+3. 另一个区别是HashMap的迭代器(Iterator)是fail-fast迭代器，而Hashtable的enumerator迭代器不是fail-fast的。所以当有其它线程改变了HashMap的结构（增加或者移除元素），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常。但这并不是一个一定发生的行为，要看JVM。这条同样也是Enumeration和Iterator的区别。
+4. 由于Hashtable是线程安全的也是synchronized，所以在单线程环境下它比HashMap要慢。如果你不需要同步，只需要单一线程，那么使用HashMap性能要好过Hashtable。
+5. HashMap不能保证随着时间的推移Map中的元素次序是不变的。
+
+#### 一：快速失败（fail—fast）
+
+​          在用迭代器遍历一个集合对象时，如果遍历过程中对集合对象的“结构”进行了修改（删除、插入），则会抛出Concurrent Modification Exception。
+
+​          原理：迭代器在遍历时直接访问集合中的内容，并且在遍历过程中使用一个 modCount 变量。集合在被遍历期间如果“结构”发生变化，就会改变modCount的值。每当迭代器使用hashNext()/next()遍历下一个元素之前，都会检测modCount变量是否为expectedmodCount值，是的话就返回遍历；否则抛出异常，终止遍历。
+
+​      注意：这里异常的抛出条件是检测到 modCount！=expectedmodCount 这个条件。如果集合发生变化时修改modCount值刚好又设置为了expectedmodCount值，则异常不会抛出。因此，不能依赖于这个异常是否抛出而进行并发操作的编程，这个异常只建议用于检测并发修改的bug。
+
+​      场景：java.util包下的集合类都是快速失败的，不能在多线程下发生并发修改（迭代过程中被修改）。
+
+####  二：安全失败（fail—safe）
+
+​      采用安全失败机制的集合容器，在遍历时不是直接在集合内容上访问的，而是先复制原有集合内容，在拷贝的集合上进行遍历。
+
+​      原理：由于迭代时是对原集合的拷贝进行遍历，所以在遍历过程中对原集合所作的修改并不能被迭代器检测到，所以不会触发Concurrent Modification Exception。
+
+​      缺点：基于拷贝内容的优点是避免了Concurrent Modification Exception，但同样地，迭代器并不能访问到修改后的内容，即：迭代器遍历的是开始遍历那一刻拿到的集合拷贝，在遍历期间原集合发生的修改迭代器是不知道的。
+
+​          场景：java.util.concurrent包下的容器都是安全失败，可以在多线程下并发使用，并发修改。
+
+**如果某个集合对象创建了Iterator或者ListIterator，然后其它的线程试图“结构上”更改集合对象，将会抛出ConcurrentModificationException异常。但其它线程可以通过set()方法更改集合对象是允许的，因为这并没有从“结构上”更改集合。**但是假如已经从结构上进行了更改，再调用set()方法，将会抛出IllegalArgumentException异常。
+
+==结构上的更改指的是删除或者插入一个元素，这样会影响到map的结构。==
+
+### 我们能否让HashMap同步？
+
+HashMap可以通过下面的语句进行同步：
+Map m = Collections.synchronizeMap(hashMap);
+
+### 结论
+
+Hashtable和HashMap有几个主要的不同：线程安全以及速度。仅在你需要完全的线程安全的时候使用Hashtable，而如果你使用Java 5或以上的话，请使用ConcurrentHashMap吧。
+
+### ③HashMap和HashSet的区别
+
+### HashSet和HashMap的区别
+
+| *HashMap*                                   | *HashSet*                                                    |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| HashMap实现了Map接口                        | HashSet实现了Set接口                                         |
+| HashMap储存键值对                           | HashSet仅仅存储对象                                          |
+| 使用put()方法将元素放入map中                | 使用add()方法将元素放入set中                                 |
+| HashMap中使用键对象来计算hashcode值         | HashSet使用成员对象来计算hashcode值，对于两个对象来说hashcode可能相同，所以equals()方法用来判断对象的相等性，如果两个对象不同的话，那么返回false |
+| HashMap比较快，因为是使用唯一的键来获取对象 | HashSet较HashMap来说比较慢                                   |
+
+
+
+### ④面试题
+
+HashMap的工作原理是近年来常见的Java面试题。几乎每个Java程序员都知道HashMap，都知道哪里要用HashMap，知道Hashtable和HashMap之间的区别，那么为何这道面试题如此特殊呢？是因为这道题考察的深度很深。这题经常出现在高级或中高级面试中。投资银行更喜欢问这个问题，甚至会要求你实现HashMap来考察你的编程能力。ConcurrentHashMap和其它同步集合的引入让这道题变得更加复杂。让我们开始探索的旅程吧！
+
+**“你用过HashMap吗？” “什么是HashMap？你为什么用到它？”**
+
+几乎每个人都会回答“是的”，然后回答HashMap的一些特性，譬如HashMap可以接受null键值和值，而Hashtable则不能；HashMap是非synchronized;HashMap很快；以及HashMap储存的是键值对等等。这显示出你已经用过HashMap，而且对它相当的熟悉。但是面试官来个急转直下，从此刻开始问出一些刁钻的问题，关于HashMap的更多基础的细节。面试官可能会问出下面的问题：
+
+**“你知道HashMap的工作原理吗？” “你知道HashMap的get()方法的工作原理吗？”**
+
+你也许会回答“我没有详查标准的Java API，你可以看看Java源代码或者Open JDK。”“我可以用Google找到答案。”
+
+但一些面试者可能可以给出答案，“HashMap是基于hashing的原理，我们使用put(key, value)存储对象到HashMap中，使用get(key)从HashMap中获取对象。当我们给put()方法传递键和值时，我们先对键调用hashCode()方法，返回的hashCode用于找到bucket位置来储存Entry对象。”这里关键点在于指出，HashMap是在bucket中储存键对象和值对象，作为Map.Entry。这一点有助于理解获取对象的逻辑。如果你没有意识到这一点，或者错误的认为仅仅只在bucket中存储值的话，你将不会回答如何从HashMap中获取对象的逻辑。这个答案相当的正确，也显示出面试者确实知道hashing以及HashMap的工作原理。但是这仅仅是故事的开始，当面试官加入一些Java程序员每天要碰到的实际场景的时候，错误的答案频现。下个问题可能是关于HashMap中的碰撞探测(collision detection)以及碰撞的解决方法：
+
+**“当两个对象的hashcode相同会发生什么？”** 从这里开始，真正的困惑开始了，一些面试者会回答因为hashcode相同，所以两个对象是相等的，HashMap将会抛出异常，或者不会存储它们。然后面试官可能会提醒他们有equals()和hashCode()两个方法，并告诉他们两个对象就算hashcode相同，但是它们可能并不相等。一些面试者可能就此放弃，而另外一些还能继续挺进，他们回答“因为hashcode相同，所以它们的bucket位置相同，‘碰撞’会发生。因为HashMap使用链表存储对象，这个Entry(包含有键值对的Map.Entry对象)会存储在链表中。”这个答案非常的合理，虽然有很多种处理碰撞的方法，这种方法是最简单的，也正是HashMap的处理方法。但故事还没有完结，面试官会继续问：
+
+**“如果两个键的hashcode相同，你如何获取值对象？”** 面试者会回答：当我们调用get()方法，HashMap会使用键对象的hashcode找到bucket位置，然后获取值对象。面试官提醒他如果有两个值对象储存在同一个bucket，他给出答案:将会遍历链表直到找到值对象。面试官会问因为你并没有值对象去比较，你是如何确定确定找到值对象的？除非面试者直到HashMap在链表中存储的是键值对，否则他们不可能回答出这一题。
+
+其中一些记得这个重要知识点的面试者会说，找到bucket位置之后，会调用keys.equals()方法去找到链表中正确的节点，最终找到要找的值对象。完美的答案！
+
+许多情况下，面试者会在这个环节中出错，因为他们混淆了hashCode()和equals()方法。因为在此之前hashCode()屡屡出现，而equals()方法仅仅在获取值对象的时候才出现。一些优秀的开发者会指出==使用不可变的、声明作final的对象，并且采用合适的equals()和hashCode()方法的话，将会减少碰撞的发生，提高效率。不可变性使得能够缓存不同键的hashcode，这将提高整个获取对象的速度，使用String，Interger这样的wrapper类作为键是非常好的选择。==
+
+如果你认为到这里已经完结了，那么听到下面这个问题的时候，你会大吃一惊。**“如果HashMap的大小超过了负载因子(load factor)定义的容量，怎么办？”**除非你真正知道HashMap的工作原理，否则你将回答不出这道题。默认的负载因子大小为0.75，也就是说，当一个map填满了75%的bucket时候，和其它集合类(如ArrayList等)一样，将会创建原来HashMap大小的两倍的bucket数组，来重新调整map的大小，并将原来的对象放入新的bucket数组中。这个过程叫作rehashing，因为它调用hash方法找到新的bucket位置。
+
+如果你能够回答这道问题，下面的问题来了：**“你了解重新调整HashMap大小存在什么问题吗？”**你可能回答不上来，这时面试官会提醒你当多线程的情况下，可能产生条件竞争(race condition)。
+
+==当重新调整HashMap大小的时候，确实存在条件竞争，因为如果两个线程都发现HashMap需要重新调整大小了，它们会同时试着调整大小。在调整大小的过程中，存储在链表中的元素的次序会反过来，因为移动到新的bucket位置的时候，HashMap并不会将元素放在链表的尾部，而是放在头部，这是为了避免尾部遍历(tail traversing)。如果条件竞争发生了，那么就死循环了==。这个时候，你可以质问面试官，为什么这么奇怪，要在多线程的环境下使用HashMap呢？：）
+
+热心的读者贡献了更多的关于HashMap的问题：
+
+1. **为什么String, Interger这样的wrapper类适合作为键？** String, Interger这样的wrapper类作为HashMap的键是再适合不过了，而且String最为常用。因为String是不可变的，也是final的，而且已经重写了equals()和hashCode()方法了。其他的wrapper类也有这个特点。不可变性是必要的，因为为了要计算hashCode()，就要防止键值改变，如果键值在放入时和获取时返回不同的hashcode的话，那么就不能从HashMap中找到你想要的对象。不可变性还有其他的优点如线程安全。如果你可以仅仅通过将某个field声明成final就能保证hashCode是不变的，那么请这么做吧。因为获取对象的时候要用到equals()和hashCode()方法，那么键对象正确的重写这两个方法是非常重要的。如果两个不相等的对象返回不同的hashcode的话，那么碰撞的几率就会小些，这样就能提高HashMap的性能。
+2. **我们可以使用自定义的对象作为键吗？** 这是前一个问题的延伸。当然你可能使用任何对象作为键，只要它遵守了equals()和hashCode()方法的定义规则，并且当对象插入到Map中之后将不会再改变了。如果这个自定义对象时不可变的，那么它已经满足了作为键的条件，因为当它创建之后就已经不能改变了。
+3. **我们可以使用CocurrentHashMap来代替Hashtable吗？**这是另外一个很热门的面试题，因为ConcurrentHashMap越来越多人用了。我们知道Hashtable是synchronized的，但是ConcurrentHashMap同步性能更好，因为它仅仅根据同步级别对map的一部分进行上锁。ConcurrentHashMap当然可以代替HashTable，但是HashTable提供更强的线程安全性。看看[这篇博客](http://javarevisited.blogspot.sg/2011/04/difference-between-concurrenthashmap.html)查看Hashtable和ConcurrentHashMap的区别。
+
+
 
 ### **1.4.3、其他特征**
 
@@ -265,7 +439,7 @@ List，Set，Map将持有对象一律视为Object型别。
 
 ## 总结:
 
-1. 如果涉及到堆栈，队列等操作，应该考虑用List，对于需要快速插入，删除元素，应该使用LinkedList，如果需要快速随机访问元素，应该使用ArrayList。
+1. ==如果涉及到堆栈，队列等操作，应该考虑用List，对于需要快速插入，删除元素，应该使用LinkedList，如果需要快速随机访问元素，应该使用ArrayList。==
 2. 如果程序在单线程环境中，或者访问仅仅在一个线程中进行，考虑非同步的类，其效率较高，如果多个线程可能同时操作一个类，应该使用同步的类。
 3. 在除需要排序时使用TreeSet,TreeMap外,都应使用HashSet,HashMap,因为他们 的效率更高。
 4. 要特别注意对哈希表的操作，作为key的对象要正确复写equals和hashCode方法。
@@ -283,118 +457,9 @@ List，Set，Map将持有对象一律视为Object型别。
 6. Map中元素，可以将key序列、value序列单独抽取出来。
    - 使用keySet()抽取key序列，将map中的所有keys生成一个Set。
    - 使用values()抽取value序列，将map中的所有values生成一个Collection。
-   - 为什么一个生成Set，一个生成Collection？那是因为，key总是独一无二的，value允许重复。
-
-### 线程安全集合类与非线程安全集合类
-
-1. LinkedList、ArrayList、HashSet是非线程安全的，Vector是线程安全的;
-2. HashMap是非线程安全的，HashTable是线程安全的;
-3. StringBuilder是非线程安全的，StringBuffer是线程安全的。
-
-## ArrayList与LinkedList的区别和适用场景
-
-### Arraylist：
-
-**优点**：ArrayList是实现了基于动态数组的数据结构,因为地址连续，一旦数据存储好了，查询操作效率会比较高（在内存里是连着放的）。
-
-**缺点**：因为地址连续， ArrayList要移动数据,所以插入和删除操作效率比较低。   
-
-### LinkedList：
-
-**优点**：LinkedList基于链表的数据结构,地址是任意的，所以在开辟内存空间的时候不需要等一个连续的地址，对于新增和删除操作add和remove，LinedList比较占优势。LinkedList 适用于要头尾操作或插入指定位置的场景
-
-**缺点**：因为LinkedList要移动指针,所以查询操作性能比较低。
-
-### 适用场景分析：
-
- 当需要对数据进行对此访问的情况下选用ArrayList，当需要对数据进行多次增加删除修改时采用LinkedList。
-
-## ArrayList与Vector的区别和适用场景
-
-### ArrayList有三个构造方法：
-
-```java
-public ArrayList(int initialCapacity)//构造一个具有指定初始容量的空列表。    
-public ArrayList()//构造一个初始容量为10的空列表。    
-public ArrayList(Collection<? extends E> c)//构造一个包含指定 collection 的元素的列表   
-```
-
-### Vector有四个构造方法：
-
-```java
-public Vector()//使用指定的初始容量和等于零的容量增量构造一个空向量。    
-public Vector(int initialCapacity)//构造一个空向量，使其内部数据数组的大小，其标准容量增量为零。 
-public Vector(Collection<? extends E> c)//构造一个包含指定 collection 中的元素的向量    
-public Vector(int initialCapacity,int capacityIncrement)//使用指定的初始容量和容量增量构造一个空的向量    
-```
-
-### ArrayList和Vector都是用数组实现的，主要有这么三个区别：
-
-1. Vector是多线程安全的，线程安全就是说多线程访问同一代码，不会产生不确定的结果。而ArrayList不是，这个可以从源码中看出，Vector类中的方法很多有synchronized进行修饰，这样就导致了Vector在效率上无法与ArrayList相比；
-
-1. ==两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同。==
-
-1. ==Vector可以设置增长因子，而ArrayList不可以。==
-
-2. Vector是一种老的动态数组，是线程同步的，效率很低，一般不赞成使用。
-
-   ### 适用场景分析：
-
-3. Vector是线程同步的，所以它也是线程安全的，而ArrayList是线程异步的，是不安全的。如果不考虑到线程的安全因素，一般用ArrayList效率比较高。
-
-4. 如果集合中的元素的数目大于目前集合数组的长度时，在集合中使用数据量比较大的数据，用Vector有一定的优势。
-
-## ArrayList 和 Vector
-
-==这两个类都实现了List接口(List接口继承了Collection接口).==
-
-他们都是有序集合,即存储在这两个集合中的元素的位置都是有顺序的,相当于一种动态的数组
-
-并且其中的数据是允许重复的
-
-ArrayList与Vector的区别
-
-- Vector的方法都是同步的(Synchronized), 是线程安全的, 也就是线程同步的, 而ArrayList是线程序不安全的. ==对于Vector&ArrayList, Hashtable&HashMap, 要记住线程安全的问题, 记住Vector与Hashtable是旧的, 是java一诞生就提供了的, 它们是线程安全的, ArrayList与HashMap是java2时才提供的, 它们是线程不安全的.==
-- ==ArrayList与Vector都有一个初始的容量大小, 当存储进它们里面的元素的个数超过了容量时, 就需要增加ArrayList与Vector的存储空间, Vector默认增长为原来两倍,而ArrayList的增长策略在文档中没有明确规定（从源代码看到的是增长为原来的1.5倍）.ArrayList与Vector都可以设置初始的空间大小, Vector还可以设置增长的空间大小, 而ArrayList没有提供设置增长空间的方法.==
-
-==**总结：即Vector增长原来的一倍,ArrayList增加原来的0.5倍. Vector 线程安全, ArrayList 不是.**==
-
-
-
-**List特点：**元素有放入顺序，元素可重复 
-
-**Set特点：**元素无放入顺序，元素不可重复，重复元素会覆盖掉，（注意：元素虽然无放入顺序，但是元素在set中的位置是有该元素的HashCode决定的，其位置其实是固定的，加入Set 的Object必须定义equals()方法 ，另外==list支持for循环，也就是通过下标来遍历，也可以用迭代器，但是set只能用迭代，因为他无序，无法用下标来取得想要的值。）== 
+   - ==为什么一个生成Set，一个生成Collection？那是因为，key总是独一无二的，value允许重复。==
 
  
-
-## HashSet与Treeset的适用场景
-
-1. ==TreeSet 是二差树（红黑树的树据结构）实现的,Treeset中的数据是自动排好序的，不允许放入null值== 
-
-2. HashSet 是哈希表实现的,HashSet中的数据是无序的，可以放入null，但只能放入一个null，两者中的值都不能重复，就如数据库中唯一约束 
-
-3. HashSet要求放入的对象必须实现HashCode()方法，放入的对象，是以hashcode码作为标识的，而具有相同内容的String对象，hashcode是一样，所以放入的内容不能重复。但是同一个类的对象可以放入不同的实
-
-   
-
-   ### 适用场景分析:
-
-   HashSet是基于Hash算法实现的，其性能通常都优于TreeSet。为快速查找而设计的Set，我们通常都应该使用HashSet，在我们需要排序的功能时，我们才使用TreeSet。
-
-### HashMap与TreeMap、HashTable的区别及适用场景
-
-1. HashMap 非线程安全  
-
-1. HashMap：基于哈希表实现。使用HashMap要求添加的键类明确定义了hashCode()和equals()[可以重写hashCode()和equals()]，为了优化HashMap空间的使用，您可以调优初始容量和负载因子。 
-2. ==TreeMap：非线程安全基于红黑树实现。TreeMap没有调优选项，因为该树总处于平衡状态。== 
-
-### 适用场景分析：
-
-==HashMap和HashTable:HashMap去掉了HashTable的contains方法，但是加上了containsValue()和containsKey()方法。HashTable同步的，而HashMap是非同步的，效率上比HashTable要高。HashMap允许空键值，而HashTable不允许。==
-
-HashMap：适用于Map中插入、删除和定位元素。 
-
-Treemap：适用于按自然顺序或自定义顺序遍历键(key)。 
 
 # HashMap（Java 7）的实现原理
 
@@ -2067,5 +2132,5 @@ Deque是个接口，其实现类有：
    8: stack.push("element1");    //向栈顶压入元素
    9: stack.push("element2");
   10: stack.push("element3");
-  11: System.out.println(queue.pop());    //取得栈顶元素，并从栈顶删去
+  11: System.out.println(queue.pop());    //取得栈顶元素，并从栈顶删
 ```

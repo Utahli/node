@@ -36,7 +36,7 @@
 3. 如果是long值，则计算(int)(f ^ (f >>> 32))
 4. 如果是float值，则计算Float.floatToIntBits(f)
 5. 如果是double值，则计算Double.doubleToLongBits(f)，然后返回的结果是long,再用规则(3)去处理long,得到int
-6. 如果是对象应用，如果equals方法中采取递归调用的比较方式，那么hashCode中同样采取递归调用hashCode的方式。否则需要为这个域计算一个范式，比如当这个域的值为null的时候，那么hashCode 值为0
+6. 如果是对象引用，如果equals方法中采取递归调用的比较方式，那么hashCode中同样采取递归调用hashCode的方式。否则需要为这个域计算一个范式，比如当这个域的值为null的时候，那么hashCode 值为0
 7. 如果是数组，那么需要为每个元素当做单独的域来处理。如果你使用的是1.5及以上版本的JDK，那么没必要自己去重新遍历一遍数组，java.util.Arrays.hashCode方法包含了8种基本类型数组和引用数组的hashCode计算，算法同上
 
 给个简单的例子：
@@ -58,22 +58,21 @@ public int hashCode() {
 
 引用数据类型用（==）进行比较的时候，
 **比较的是在内存中的存放地址，所以，除非是实例化的同一个对象比较后的结果才为true，否则比较后结果为false。**
-注意一下，String，Integer，Date这些类重写了equals()方法，不再是比较类在堆内存中的存放地址了。
+==注意一下，String，Integer，Date这些类重写了equals()方法，不再是比较类在堆内存中的存放地址了。==
 
 
 
 # Object类中常见的方法
 
-2018年03月15日 22:00:48
 
-阅读数：114
 
 **一.Object类中的toString()方法** 
-\1. object 默认方法 toString方法，toString() 输出一个对象的地址字符串（哈希code码）！ 
-2.可以通过重写toString方法，获取对象的属性！ 快捷键 alt+shift+s创建Override toString() 
+
+==object 默认方法 toString方法，toString() 输出一个对象的地址字符串（哈希code码）！== 
+
 **二.Object类中的equals()方法** 
-Object类equals()比较的是对象的引用是否指向同一块内存地址！ 
-重写equals()方法比较俩对象的属性值是否相同 
+==Object类equals()比较的是对象的引用是否指向同一块内存地址！== 
+
 **Object()** 
 默认构造方法 
 **clone()** 
@@ -84,11 +83,7 @@ Object类equals()比较的是对象的引用是否指向同一块内存地址！
 返回一个对象的运行时类。 
 **hashCode()** 
 返回该对象的哈希码值。 
-**为什么wait notify会放在Object里边？** 
-wait(),notify(),notifyAll()用来操作线程为什么定义在Object类中？ 
-1、这些方法存在于同步中； 
-2、使用这些方法必须标识同步所属的锁； 
-3、锁可以是任意对象，所以任意对象调用方法一定定义在Object类中。 
+
 **wait(),sleep()区别？** 
 wait():释放资源，释放锁 
 sleep():释放资源，不释放锁
@@ -116,218 +111,24 @@ sleep():释放资源，不释放锁
 
 ### 答案
 
-`为什么它们不应该在Thread类`这里有一些想法，对我来说是有意义的。
+==`为什么它们不应该在Thread类`这里有一些想法，对我来说是有意义的。==
 
-1. `wait`和`nofity`不是常见的普通java方法或同步工具，在Java中它们更多的是实现两个线程之间的通信机制。 如果不能通过类似`synchronized`这样的Java关键字来实现这种机制，那么`Object`类中就是定义它们最好的地方，以此来使任何Java对象都可以拥有实现线程通信机制的能力。记住`synchronized`和`wait`,`notify`是两个不同的问题域，并且不要混淆它们的相似或相关性。 同步类似竞态条件，是提供线程间互斥和确保Java类的线程安全性的，而`wait`和`notify`是两个线程之间的通信机制。
-2. 每个对象都可以作为锁，这是另一个原因`wait`和`notify`在Object类中声明，而不是Thread类。
-3. 在Java中，为了进入临界区代码段，线程需要获得锁并且它们等待锁可用，它们不知道哪些线程持有锁而它们只知道锁是由某个线程保持，它们应该等待锁而不是知道哪个线程在同步块内并要求它们释放锁。 这个比喻适合等待和通知在`object`类而不是Java中的线程。
-
-这些只是我的想法`为什么wait和notify方法在Object类中声明`，而不是Java中的Thread，当然你可以有不同的观点。 在现实中，它就是Java不支持操作符重载一样，只是Java设计者做的一个设计决定。 无论如何，如果你有任何其它令人信服的理由请发布出来。
-
-
+1. ==`wait`和`nofity`不是常见的普通java方法或同步工具，在Java中它们更多的是实现两个线程之间的通信机制。 如果不能通过类似`synchronized`这样的Java关键字来实现这种机制，那么`Object`类中就是定义它们最好的地方，以此来使任何Java对象都可以拥有实现线程通信机制的能力。记住`synchronized`和`wait`,`notify`是两个不同的问题域，并且不要混淆它们的相似或相关性。 同步类似竞态条件，是提供线程间互斥和确保Java类的线程安全性的，而`wait`和`notify`是两个线程之间的通信机制。==
+2. ==每个对象都可以作为锁，这是另一个原因`wait`和`notify`在Object类中声明，而不是Thread类。==
+3. ==在Java中，为了进入临界区代码段，线程需要获得锁并且它们等待锁可用，它们不知道哪些线程持有锁而它们只知道锁是由某个线程保持，它们应该等待锁而不是知道哪个线程在同步块内并要求它们释放锁。 这个比喻适合等待和通知在`object`类而不是Java中的线程。==
 
 clone方法执行的是浅拷贝， 在编写程序时要注意这个细节。
 
 # 覆盖Object中的clone方法， 实现深拷贝
 
-现在为了要在clone对象时进行深拷贝， 那么就要Clonable接口，覆盖并实现clone方法，除了调用父类中的clone方法得到新的对象， 还要将该类中的引用变量也clone出来。**Cloneable 接口是一个标识性接口，即该接口不包含任何方法（甚至没有clone()方法），但是如果一个类想合法的进行克隆，那么就必须实现这个接口。** 
+==现在为了要在clone对象时进行深拷贝， 那么就要Clonable接口，覆盖并实现clone方法，除了调用父类中的clone方法得到新的对象， 还要将该类中的引用变量也clone出来。==**==Cloneable 接口是一个标识性接口，即该接口不包含任何方法（甚至没有clone()方法），但是如果一个类想合法的进行克隆，那么就必须实现这个接口。==** 
 
-- 调用Clone()方法的对象所属的类(Class)必须实现 Clonable 接口，否则在调用Clone方法的时候会抛出CloneNotSupportedException；
+- ==调用Clone()方法的对象所属的类(Class)必须实现 Clonable 接口，否则在调用Clone方法的时候会抛出CloneNotSupportedException；==
 
-  如果只是用Object中默认的clone方法，是浅拷贝的，再次以下面的代码验证：
-
-```java
-	static class Body implements Cloneable{
-		public Head head;
-		
-		public Body() {}
- 
-		public Body(Head head) {this.head = head;}
- 
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			return super.clone();
-		}
-		
-	}
-	static class Head /*implements Cloneable*/{
-		public  Face face;
-		
-		public Head() {}
-		public Head(Face face){this.face = face;}
-		
-	} 
-	public static void main(String[] args) throws CloneNotSupportedException {
-		
-		Body body = new Body(new Head());
-		
-		Body body1 = (Body) body.clone();
-		
-		System.out.println("body == body1 : " + (body == body1) );
-		
-		System.out.println("body.head == body1.head : " +  (body.head == body1.head));
-		
-		
-	}
-```
-
-在以上代码中， 有两个主要的类， 分别为Body和Face， 在Body类中， 组合了一个Face对象。当对Body对象进行clone时， 它组合的Face对象只进行浅拷贝。打印结果可以验证该结论：
-
-body == body1 : false
-body.head == body1.head : true
-
-如果要使Body对象在clone时进行深拷贝， 那么就要在Body的clone方法中，将源对象引用的Head对象也clone一份。
-
-```java
-	static class Body implements Cloneable{
-		public Head head;
-		public Body() {}
-		public Body(Head head) {this.head = head;}
- 
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			Body newBody =  (Body) super.clone();
-			newBody.head = (Head) head.clone();
-			return newBody;
-		}
-		
-	}
-	static class Head implements Cloneable{
-		public  Face face;
-		
-		public Head() {}
-		public Head(Face face){this.face = face;}
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			return super.clone();
-		}
-	} 
-	public static void main(String[] args) throws CloneNotSupportedException {
-		
-		Body body = new Body(new Head());
-		
-		Body body1 = (Body) body.clone();
-		
-		System.out.println("body == body1 : " + (body == body1) );
-		
-		System.out.println("body.head == body1.head : " +  (body.head == body1.head));
-		
-		
-	}
-
-```
-
-打印结果为：
-
-body == body1 : false
-body.head == body1.head : false
-
-由此可见， body和body1内的head引用指向了不同的Head对象， 也就是说在clone Body对象的同时， 也拷贝了它所引用的Head对象， 进行了深拷贝。
-
-# 真的是深拷贝吗
-
-由上一节的内容可以得出如下结论：如果想要深拷贝一个对象， 这个对象必须要实现Cloneable接口，实现clone方法，并且在clone方法内部，把该对象引用的其他对象也要clone一份 ， 这就要求这个被引用的对象必须也要实现Cloneable接口并且实现clone方法。
-
-那么，按照上面的结论， Body类组合了Head类， 而Head类组合了Face类，要想深拷贝Body类，必须在Body类的clone方法中将Head类也要拷贝一份，但是在拷贝Head类时，默认执行的是浅拷贝，也就是说Head中组合的Face对象并不会被拷贝。验证代码如下：（这里本来只给出Face类的代码就可以了， 但是为了阅读起来具有连贯性，避免丢失上下文信息， 还是给出整个程序，整个程序也非常简短）
-
-```java
-	static class Body implements Cloneable{
-		public Head head;
-		public Body() {}
-		public Body(Head head) {this.head = head;}
- 
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			Body newBody =  (Body) super.clone();
-			newBody.head = (Head) head.clone();
-			return newBody;
-		}
-		
-	}
-	
-	static class Head implements Cloneable{
-		public  Face face;
-		
-		public Head() {}
-		public Head(Face face){this.face = face;}
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			return super.clone();
-		}
-	} 
-	
-	static class Face{}
-	
-	public static void main(String[] args) throws CloneNotSupportedException {
-		
-		Body body = new Body(new Head(new Face()));
-		
-		Body body1 = (Body) body.clone();
-		
-		System.out.println("body == body1 : " + (body == body1) );
-		
-		System.out.println("body.head == body1.head : " +  (body.head == body1.head));
-		
-		System.out.println("body.head.face == body1.head.face : " +  (body.head.face == body1.head.face));
-		
-		
-	}
-
-```
-
-打印结果为：
-
-body == body1 : false
-body.head == body1.head : false
-body.head.face == body1.head.face : true
-
-内存结构图如下图所示：
-
-![](D:\workspace\Github\node\瑞秋\answer\assets/20140119225541718.png)
-
-那么，对Body对象来说，算是这算是深拷贝吗？其实应该算是深拷贝，因为对Body对象内所引用的其他对象（目前只有Head）都进行了拷贝，也就是说两个独立的Body对象内的head引用已经指向了独立的两个Head对象。但是，这对于两个Head对象来说，他们指向了同一个Face对象，这就说明，两个Body对象还是有一定的联系，并没有完全的独立。这应该说是一种不彻底的深拷贝。
 
 # 如何进行彻底的深拷贝
 
-对于上面的例子来说，怎样才能保证两个Body对象完全独立呢？只要在拷贝Head对象的时候，也将Face对象拷贝一份就可以了。这需要让Face类也实现Cloneable接口，实现clone方法，并且在在Head对象的clone方法中，拷贝它所引用的Face对象。修改的部分代码如下：
-
-```java
-	static class Head implements Cloneable{
-		public  Face face;
-		
-		public Head() {}
-		public Head(Face face){this.face = face;}
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			//return super.clone();
-			Head newHead = (Head) super.clone();
-			newHead.face = (Face) this.face.clone();
-			return newHead;
-		}
-	} 
-	
-	static class Face implements Cloneable{
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			return super.clone();
-		}
-	}
-
-```
-
-再次运行上面的示例，得到的运行结果如下：
-
-body == body1 : false
-body.head == body1.head : false
-body.head.face == body1.head.face : false
-
-这说名两个Body已经完全独立了，他们间接引用的face对象已经被拷贝，也就是引用了独立的Face对象。内存结构图如下：
-
-![](D:\workspace\Github\node\瑞秋\answer\assets/20140119231732546.png)
-
-依此类推，如果Face对象还引用了其他的对象， 比如说Mouth，如果不经过处理，Body对象拷贝之后还是会通过一级一级的引用，引用到同一个Mouth对象。同理， 如果要让Body在引用链上完全独立， 只能显式的让Mouth对象也被拷贝。
-
-到此，可以得到如下结论：如果在拷贝一个对象时，要想让这个拷贝的对象和源对象完全彼此独立，那么在引用链上的每一级对象都要被显式的拷贝。所以创建彻底的深拷贝是非常麻烦的，尤其是在引用关系非常复杂的情况下， 或者在引用链的某一级上引用了一个第三方的对象， 而这个对象没有实现clone方法， 那么在它之后的所有引用的对象都是被共享的。 
+==如果在拷贝一个对象时，要想让这个拷贝的对象和源对象完全彼此独立，那么在引用链上的每一级对象都要被显式的拷贝。所以创建彻底的深拷贝是非常麻烦的，尤其是在引用关系非常复杂的情况下， 或者在引用链的某一级上引用了一个第三方的对象， 而这个对象没有实现clone方法， 那么在它之后的所有引用的对象都是被共享的。== 
 
 
 
@@ -335,7 +136,7 @@ body.head.face == body1.head.face : false
 
 # 类与类加载器
 
-类加载器虽然只用于实现类的加载动作，但它在Java程序起到的作用却远大于类加载阶段。对于任意一个类，都需要由**加载它的类加载器和这个类本身**一同确立**其在Java虚拟机中的唯一性**，每一个类加载器，都拥有一个独立的类名称空间。通俗而言：比较两个类是否“相等”（这里所指的“相等”，包括类的Class对象的equals()方法、isAssignableFrom()方法、isInstance()方法的返回结果，也包括使用instanceof()关键字对做对象所属关系判定等情况），只有在这两个类时由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。
+类加载器虽然只用于实现类的加载动作，但它在Java程序起到的作用却远大于类加载阶段==。对于任意一个类，都需要由**加载它的类加载器和这个类本身**一同确立**其在Java虚拟机中的唯一性**，每一个类加载器，都拥有一个独立的类名称空间。==通俗而言：**比较两个类是否“相等”**（这里所指的“相等”，包括类的Class对象的equals()方法、isAssignableFrom()方法、isInstance()方法的返回结果，也包括使用instanceof()关键字对做对象所属关系判定等情况）**，==只有在这两个类时由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。==**
 
 # 双亲委派模型
 
@@ -354,92 +155,19 @@ body.head.face == body1.head.face : false
 
 ![img](https://pic.yupoo.com/crowhawk/188f5d64/26536d6a.png)
 
-上图展示的类加载器之间的层次关系，称为类加载器的**双亲委派模型（Parents Delegation Model）**。该模型要求除了顶层的启动类加载器外，其余的类加载器都应有自己的父类加载器，这里类加载器之间的父子关系一般通过**组合（Composition）**关系来实现，而不是通过继承（Inheritance）的关系实现。
+上图展示的类加载器之间的层次关系，称为类加载器的**双亲委派模型（Parents Delegation Model）**。该模型要求除了顶层的启动类加载器外，其余的类加载器都应有自己的父类加载器，==这里类加载器之间的父子关系一般通过**组合（Composition）**关系来实现，而不是通过继承（Inheritance）的关系实现。==
 
 **工作过程**
 
-如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载，而是把这个请求委派给父类加载器，每一个层次的加载器都是如此，依次递归，因此所有的加载请求**最终都应该传送到顶层的启动类加载器中**，只有当父加载器反馈自己无法完成此加载请求（它搜索范围中没有找到所需类）时，子加载器才会尝试自己加载。
+==如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载，而是把这个请求委派给父类加载器，每一个层次的加载器都是如此，依次递归，因此所有的加载请求**最终都应该传送到顶层的启动类加载器中**，只有当父加载器反馈自己无法完成此加载请求（它搜索范围中没有找到所需类）时，子加载器才会尝试自己加载。==
 
 **优点**
 
-使用双亲委派模型来组织类加载器之间的关系，使得Java类随着它的类加载器一起具备了一种**带有优先级的层次关系**。例如类`java.lang.Object`，它存放再`rt.jar`中，无论哪个类加载器要加载这个类，最终都是委派给处于模型最顶端的启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。
+==使用双亲委派模型来组织类加载器之间的关系，使得Java类随着它的类加载器一起具备了一种**带有优先级的层次关系**。例如类`java.lang.Object`，它存放再`rt.jar`中，无论哪个类加载器要加载这个类，最终都是委派给处于模型最顶端的启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。==
 
 相反，如果没有双亲委派模型，由各个类加载器自行加载的话，如果用户编写了一个称为｀`java.lang.Object`的类，并放在程序的ClassPath中，那系统中将会出现多个不同的Object类，程序将变得一片混乱。如果开发者尝试编写一个与`rt.jar`类库中已有类重名的Java类，将会发现可以正常编译，但是永远无法被加载运行。
 
-双亲委派模型的实现如下：
-
-```
-protected synchronized Class<?> loadClass(String name,boolean resolve)throws ClassNotFoundException{
-    //check the class has been loaded or not
-    Class c = findLoadedClass(name);
-    if(c == null){
-        try{
-            if(parent != null){
-                c = parent.loadClass(name,false);
-            }else{
-                c = findBootstrapClassOrNull(name);
-            }
-        }catch(ClassNotFoundException e){
-            //if throws the exception ,the father can not complete the load
-        }
-        if(c == null){
-            c = findClass(name);
-        }
-    }
-    if(resolve){
-        resolveClass(c);
-    }
-    return c;
-}
-```
-
-
 # java基本数据类型传递与引用传递
-
-虽然到这里两个数据类型的传递都分析完了，也明白的基本数据类型的传递和引用数据类型的传递区别，前者将不会修改原数据的值，而后者将会修改引用所指向对象的值。可通过上面的实例我们可能就会觉得java同时拥有按值调用和按引用调用啊，可惜的是这样的理解是有误导性的，虽然上面引用传递表面上体现了按引用调用现象，但是java中确实只有按值调用而没有按引用调用。到这里估计不少人都蒙逼了，下面我们通过一个反例来说明（回忆一下开头我们所说明的按值调用与按引用调用的根本区别）。
-
-```
-package com.zejian.test;
-/**
- * java中的按值调用
- * @author zejian
- */
-public class CallByValue {
-	private static User user=null;
-	private static User stu=null;
-	
-	/**
-	 * 交换两个对象
-	 * @param x
-	 * @param y
-	 */
-	public static void swap(User x,User y){
-		User temp =x;
-		x=y;
-		y=temp;
-	}
-	
-	
-	public static void main(String[] args) {
-		user = new User("user",26);
-		stu = new User("stu",18);
-		System.out.println("调用前user的值："+user.toString());
-		System.out.println("调用前stu的值："+stu.toString());
-		swap(user,stu);
-		System.out.println("调用后user的值："+user.toString());
-		System.out.println("调用后stu的值："+stu.toString());
-	}
-}
-
-```
-
-我们通过一个swap函数来交换两个变量user和stu的值，在前面我们说过，如果是按引用调用那么一个方法可以修改传递引用所对应的变量值，也就是说如果java是按引用调用的话，那么swap方法将能够实现数据的交换，而实际运行结果是：
-
-我们发现user和stu的值并没有发生变化，也就是方法并没有改变存储在变量user和stu中的对象引用。swap方法的参数x和y被初始化为两个对象引用的拷贝，这个方法交换的是这两个拷贝的值而已，最终，所做的事都是白费力气罢了。在方法结束后x，y将被丢弃，而原来的变量user和stu仍然引用这个方法调用之前所引用的对象。
-
-![](D:\workspace\Github\node\瑞秋\answer\assets\20160419170901739.png)
-
-这个过程也充分说明了java程序设计语言对对象采用的不是引用调用，实际上是对象引用进行的是值传递，当然在这里我们可以简单理解为这就是按值调用和引用调用的区别，而且必须明白即使java函数在传递引用数据类型时，也只是拷贝了引用的值罢了，之所以能修改引用数据是因为它们同时指向了一个对象，但这仍然是按值调用而不是引用调用。
 
 总结：
 
@@ -453,13 +181,13 @@ public class CallByValue {
 
 
 
-数组是基本上所有语言都会有的一种数据类型，它表示一组相同类型的数据的集合，具有固定的长度，并且在内存中占据连续的空间。在C，C++等语言中，数组的定义简洁清晰，而在java中确有一些会让人迷惑的特性。本文就尝试分析这些特性。
+==数组是基本上所有语言都会有的一种数据类型，它表示一组相同类型的数据的集合，具有固定的长度，并且在内存中占据连续的空间。==
 
 #Java中的数组是对象吗？
 
 Java和C++都是面向对象的语言。在使用这些语言的时候，我们可以直接使用标准的类库，也可以使用组合和继承等面向对象的特性构建自己的类，并且根据自己构建的类创建对象。那么，我们是不是应该考虑这样一个问题：在面向对象的语言中，数组是对象吗？
 
-要判断数组是不是对象，那么首先明确什么是对象，也就是对象的定义。在较高的层面上，对象是根据某个类创建出来的一个实例，表示某类事物中一个具体的个体。对象具有各种属性，并且具有一些特定的行为。而在较低的层面上，站在计算机的角度，对象就是内存中的一个内存块，在这个内存块封装了一些数据，也就是类中定义的各个属性，所以，对象是用来封装数据的。以下为一个Person对象在内存中的表示：
+要判断数组是不是对象，那么首先明确什么是对象，也就是对象的定义。==在较高的层面上，对象是根据某个类创建出来的一个实例，表示某类事物中一个具体的个体。对象具有各种属性，并且具有一些特定的行为。而在较低的层面上，站在计算机的角度，对象就是内存中的一个内存块，在这个内存块封装了一些数据，也就是类中定义的各个属性，所以，对象是用来封装数据的。==以下为一个Person对象在内存中的表示：
 
 ![](D:\workspace\Github\node\瑞秋\answer\assets\20131115233005265.png)
 
@@ -488,21 +216,7 @@ Java和C++都是面向对象的语言。在使用这些语言的时候，我们�
 
  
 
-在数组a上， 可以访问他的属性，也可以调用一些方法。**这基本上可以认定，java中的数组也是对象，它具有java中其他对象的一些基本特点：封装了一些数据，可以访问属性，也可以调用方法。所以，数组是对象。**
-
-而在C++中，数组虽然封装了数据，但数组名只是一个指针，指向数组中的首个元素，既没有属性，也没有方法可以调用。如下代码所示：
-
-```
-int main(){
-	int a[] = {1, 2, 3, 4};
-	int* pa = a;
-	//无法访问属性，也不能调用方法。
-	return 0;
-}
-
-```
-
- 所以C++中的数组不是对象，只是一个数据的集合，而不能当做对象来使用。 
+在数组a上， 可以访问他的属性，也可以调用一些方法。==**这基本上可以认定，java中的数组也是对象，它具有java中其他对象的一些基本特点：封装了一些数据，可以访问属性，也可以调用方法。所以，数组是对象。**==
 
 # Java中数组的类型
 
@@ -541,16 +255,16 @@ Java是一种强类型的语言。既然是对象， 那么就必须属于一个
 
  
 
-这只能有一个解释，那就是**虚拟机自动创建了数组类型**，可以把数组类型和8种基本数据类型一样， 当做java的内建类型。这种类型的命名规则是这样的：
+这只能有一个解释，那就是**虚拟机自动创建了数组类型**，可以把数组类型和8种基本数据类型一样， 当做java的内建类型。==这种类型的命名规则是这样的：==
 
-* 每一维度用一个[表示；开头两个[，就代表是二维数组。
-* [后面是数组中元素的类型(包括基本数据类型和引用数据类型)
+* ==每一维度用一个[表示；开头两个[，就代表是二维数组。==
+* ==[后面是数组中元素的类型(包括基本数据类型和引用数据类型)==
 
 在java语言层面上,s是数组,也是一个对象,那么他的类型应该是String[]，这样说是合理的。但是在JVM中，他的类型为[java.lang.String。顺便说一句普通的类在JVM里的类型为 包名+类名，也就是全限定名。同一个类型在java语言中和在虚拟机中的表示可能是不一样的。
 
 #Java中数组的继承关系
 
-上面已经验证了，数组是对象，也就是说可以以操作对象的方式来操作数组。并且数组在虚拟机中有它特别的类型。既然是对象，遵循Java语言中的规则 -- Object是上帝， 也就是说所有类的顶层父类都是Object。数组的顶层父类也必须是Object，这就说明数组对象可以向上直接转型到Object，也可以向下强制类型转换，也可以使用instanceof关键字做类型判定。 这一切都和普通对象一样。如下代码所示：
+上面已经验证了，数组是对象，也就是说可以以操作对象的方式来操作数组。并且数组在虚拟机中有它特别的类型。既然是对象，遵循Java语言中的规则 -- Object是上帝， 也就是说所有类的顶层父类都是Object。==数组的顶层父类也必须是Object，这就说明数组对象可以向上直接转型到Object，也可以向下强制类型转换，也可以使用instanceof关键字做类型判定。== 这一切都和普通对象一样。如下代码所示：
 
 ```
 		//1		在test1()中已经测试得到以下结论: 数组也是对象, 数组的顶层父类是Object, 所以可以向上转型
@@ -592,7 +306,7 @@ Java是一种强类型的语言。既然是对象， 那么就必须属于一个
 
 ![](D:\workspace\Github\node\瑞秋\answer\assets\20131116003417359.png)
 
-这样的话就违背了Java单继承的原则。String[]不可能即继承Object，又继承Object[]。上面的类图肯定是错误的。那么只能这样解释：数组类直接继承了Object，关于Object[]类型的引用能够指向String[]类型的对象，这种情况只能是Java语法之中的一个特例，并不是严格意义上的继承。也就是说，**String[]不继承自Object[]，但是我可以允许你向上转型到Object[]，这种特性是赋予你的一项特权。**
+这样的话就违背了Java单继承的原则。String[]不可能即继承Object，又继承Object[]。上面的类图肯定是错误的。那么只能这样解释：数组类直接继承了Object，关于Object[]类型的引用能够指向String[]类型的对象，这种情况只能是Java语法之中的一个特例，并不是严格意义上的继承。也就是说，==**String[]不继承自Object[]，但是我可以允许你向上转型到Object[]，这种特性是赋予你的一项特权。**==
 
 其实这种关系可以这样表述：**如果有两个类A和B，如果B继承（extends）了A，那么A[]类型的引用就可以指向B[]类型的对象。**如下代码所示：
 
@@ -628,22 +342,22 @@ Java是一种强类型的语言。既然是对象， 那么就必须属于一个
 
 上面的代码可以这样理解： 
 
-将Father[][]数组看成是一维数组, 这是个数组中的元素为Father[]，将Son[][]数组看成是一维数组, 这是个数组中的元素为Son[]，因为Father[]类型的引用可以指向Son[]类型的对象，所以，根据上面的结论，Father[][]的引用可以指向Son[][]类型的对象。
+将Father[][]数组看成是一维数组, 这是个数组中的元素为Father[]，将Son[][]数组看成是一维数组, 这是个数组中的元素为Son[]，因为Father[]类型的引用可以指向Son[]类型的对象，所以，根据上面的结论，==Father[][]的引用可以指向Son[][]类型的对象。==
 
-数组的这种用法不能作用于基本类型数据：
+==数组的这种用法不能作用于基本类型数据：==
 
 ```
 int[] aa = new int[4];
 //Object[] objaa = aa;  //错误的，不能通过编译
 ```
 
- 这是错误的, 因为int不是引用类型，Object不是int的父类，在这里自动装箱不起作用。但是这种方式是可以的： 
+ ==这是错误的, 因为int不是引用类型，Object不是int的父类，在这里自动装箱不起作用。但是这种方式是可以的：== 
 
 ```
 Object[] objss = {"aaa", 1, 2.5};
 ```
 
- 这种情况下自动装箱可以工作，也就是说，Object数组中可以存放任何值，包括基本数据类型。
+ ==这种情况下自动装箱可以工作，也就是说，Object数组中可以存放任何值，包括基本数据类型。==
 
  
 
