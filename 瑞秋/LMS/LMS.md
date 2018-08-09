@@ -57,10 +57,7 @@ System.arraycopy()：array的复制。
 
 
 
-# Interface Iterable
 
-==迭代器接口，这是Collection类的父接口。实现这个Iterable接口的对象允许使用foreach进行遍历，也就是说，所有的Collection集合对象都具有"foreach可遍历性"。这个Iterable接口只==
-==有一个方法: iterator()。它返回一个代表当前集合对象的泛型<T>迭代器，用于之后的遍历操作==
 
 ## 一、Collection 接口
 
