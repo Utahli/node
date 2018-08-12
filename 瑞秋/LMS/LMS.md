@@ -121,7 +121,7 @@ ArrayList 擅长于随机访问。同时 ArrayList 是非同步的。
 
 **优点**：ArrayList是实现了基于动态数组的数据结构,因为地址连续，一旦数据存储好了，查询操作效率会比较高（在内存里是连着放的）。
 
-**缺点**：因为地址连续， ArrayList要移动数据,所以插入和删除操作效率比较低。 
+**缺点**：因为地址连续， ArrayList要移动数据、插入和删除操作效率比较低。 
 
 ### 2.2、LinkedList
 
@@ -198,9 +198,9 @@ HashSet 堪称查询速度最快的集合，因为其内部是以 HashCode 来�
 
 LinkedHashSet 与 TreeSet 和 HashSet 很相似，除了以下几点不同：
 
-1. hashSet 不保证 Set 的迭代顺序；
-2. TreeSet 按照升序排序元素；
-3. LinkedHashSet 会按照插入的顺序排序，输出的顺序与插入时的顺序相同；
+1. ==hashSet 不保证 Set 的迭代顺序；==
+2. ==TreeSet 按照升序排序元素；==
+3. ==LinkedHashSet 会按照插入的顺序排序，输出的顺序与插入时的顺序相同；==
 
 ## 四、Map 接口
 
@@ -233,11 +233,11 @@ void clear()：从映像中删除所有映射
 
 ==TreeMap ： 基于红黑树数据结构的实现，实现了 SortedMap 接口，键以某种排序规则排序。查看“键”或“键值对”时，它们会被排序(次序由Comparabel或Comparator决定)。TreeMap的特点在 于，你得到的结果是经过排序的。TreeMap是唯一的带有subMap()方法的Map，它可以返回一个子树。== 
 
-由于 TreeMap 需要维持内部元素的顺序，所以它通常要比 HashMap 和 HashTable 慢。
+==由于 TreeMap 需要维持内部元素的顺序，所以它通常要比 HashMap 和 HashTable 慢。==
 
-- TreeMap 是按照键值升序排列的
-- 不允许键对象是null
-- 是非同步的
+- ==TreeMap 是按照键值升序排列的==
+- ==不允许键对象是null==
+- ==是非同步的==
 
 #### LinkedHashMap
 
@@ -292,13 +292,12 @@ void clear()：从映像中删除所有映射
 
 ### 6.1、Vector 和 ArrayList
 
-1，==vector 是线程同步的，所以它也是线程安全的，而 arraylist 是线程异步的，是不安全的。==如果不考虑到线程的安全因素，一般用 arraylist 效率比较高。
 
-2，==如果集合中的元素的数目大于目前集合数组的长度时，vector 增长率为目前数组长度的 100%,而 arraylist 增长率为目前数组长度的 50%.如过在集合中使用数据量比较大的数据，用 vector 有一定的优势。==
 
-3，如果查找一个指定位置的数据，vector 和 arraylist 使用的时间是相同的，都是 0(1),这个时候使用 vector 和 arraylist 都可以。而如果移动一个指定位置的数据花费的时间为 0(n-i)n 为总长度，这个时候就应该考虑到使用 linklist,因为它移动一个指定位置的数据所花费的时间为 0(1),而查询一个指定位置的数据时花费的时间为 0(i)。
+- ==Vector的方法都是同步的(Synchronized), 是线程安全的, 也就是线程同步的, 而ArrayList是线程序不安全的==
+- ==ArrayList与Vector都有一个初始的容量大小, 当存储进它们里面的元素的个数超过了容量时, 就需要增加ArrayList与Vector的存储空间, Vector默认增长为原来两倍,而ArrayList的增长策略在文档中没有明确规定（从源代码看到的是增长为原来的1.5倍）.ArrayList与Vector都可以设置初始的空间大小, Vector还可以设置增长的空间大小, 而ArrayList没有提供设置增长空间的方法.==
 
-ArrayList 和 Vector 是采用数组方式存储数据，此数组元素数大于实际存储的数据以便增加和插入元素，都允许直接序号索引元素，但是插入数据要设计到数组元素移动等内存操作，所以索引数据快插入数据慢，Vector 由于使用了 synchronized 方法（线程安全）所以性能上比 ArrayList 要差，LinkedList 使用双向链表实现存储，按序号索引数据需要进行向前或向后遍历，但是插入数据时只需要记录本项的前后项即可，所以插入数度较快！
+==**总结：即Vector增长原来的一倍,ArrayList增加原来的0.5倍. Vector 线程安全, ArrayList 不是.**==
 
 ### 6.2、Aarraylist 和 Linkedlist
 
@@ -310,18 +309,7 @@ ArrayList 和 Vector 是采用数组方式存储数据，此数组元素数大�
 
 这一点要看实际情况的。若只对单条数据插入或删除，ArrayList 的速度反而优于 LinkedList。但若是批量随机的插入删除数据，LinkedList 的速度大大优于 ArrayList. 因为 ArrayList 每插入一条数据，要移动插入点及之后的所有数据。
 
-### ## ArrayList 和 Vector
 
-==这两个类都实现了List接口(List接口继承了Collection接口).==
-
-他们都是有序集合,即存储在这两个集合中的元素的位置都是有顺序的,相当于一种动态的数组，并且其中的数据是允许重复的
-
-ArrayList与Vector的区别
-
-- ==Vector的方法都是同步的(Synchronized), 是线程安全的, 也就是线程同步的, 而ArrayList是线程序不安全的==
-- ==ArrayList与Vector都有一个初始的容量大小, 当存储进它们里面的元素的个数超过了容量时, 就需要增加ArrayList与Vector的存储空间, Vector默认增长为原来两倍,而ArrayList的增长策略在文档中没有明确规定（从源代码看到的是增长为原来的1.5倍）.ArrayList与Vector都可以设置初始的空间大小, Vector还可以设置增长的空间大小, 而ArrayList没有提供设置增长空间的方法.==
-
-==**总结：即Vector增长原来的一倍,ArrayList增加原来的0.5倍. Vector 线程安全, ArrayList 不是.**==
 
 ### 6.3、HashMap 与 TreeMap
 
@@ -347,15 +335,15 @@ ArrayList与Vector的区别
 
 ​          在用迭代器遍历一个集合对象时，如果遍历过程中对集合对象的“结构”进行了修改（删除、插入），则会抛出Concurrent Modification Exception。
 
-​          原理：迭代器在遍历时直接访问集合中的内容，并且在遍历过程中使用一个 modCount 变量。集合在被遍历期间如果“结构”发生变化，就会改变modCount的值。每当迭代器使用hashNext()/next()遍历下一个元素之前，都会检测modCount变量是否为expectedmodCount值，是的话就返回遍历；否则抛出异常，终止遍历。
+​          原理：迭代器在遍历时直接访问集合中的内容，并且在遍历过程中使用一个 modCount 变量。集合在被遍历期间如果“结构”发生变化，就会改变modCount的值==。每当迭代器使用hashNext()/next()遍历下一个元素之前，都会检测modCount变量是否为expectedmodCount（在获取迭代器时取modCount值）值，是的话就返回遍历；否则抛出异常，终止遍历。==
 
-​      注意：这里异常的抛出条件是检测到 modCount！=expectedmodCount 这个条件。如果集合发生变化时修改modCount值刚好又设置为了expectedmodCount值，则异常不会抛出。因此，不能依赖于这个异常是否抛出而进行并发操作的编程，这个异常只建议用于检测并发修改的bug。
+​      注意：==这里异常的抛出条件是检测到 modCount！=expectedmodCount 这个条件。如果集合发生变化时修改modCount值刚好又设置为了expectedmodCount值，则异常不会抛出。==因此，不能依赖于这个异常是否抛出而进行并发操作的编程，这个异常只建议用于检测并发修改的bug。
 
 ​      场景：java.util包下的集合类都是快速失败的，不能在多线程下发生并发修改（迭代过程中被修改）。
 
 ####  二：安全失败（fail—safe）
 
-​      采用安全失败机制的集合容器，在遍历时不是直接在集合内容上访问的，而是先复制原有集合内容，在拷贝的集合上进行遍历。
+​==      采用安全失败机制的集合容器，在遍历时不是直接在集合内容上访问的，而是先复制原有集合内容，在拷贝的集合上进行遍历。==
 
 ​      原理：由于迭代时是对原集合的拷贝进行遍历，所以在遍历过程中对原集合所作的修改并不能被迭代器检测到，所以不会触发Concurrent Modification Exception。
 
@@ -363,7 +351,7 @@ ArrayList与Vector的区别
 
 ​          场景：java.util.concurrent包下的容器都是安全失败，可以在多线程下并发使用，并发修改。
 
-**如果某个集合对象创建了Iterator或者ListIterator，然后其它的线程试图“结构上”更改集合对象，将会抛出ConcurrentModificationException异常。但其它线程可以通过set()方法更改集合对象是允许的，因为这并没有从“结构上”更改集合。**但是假如已经从结构上进行了更改，再调用set()方法，将会抛出IllegalArgumentException异常。
+==**如果某个集合对象创建了Iterator或者ListIterator，然后其它的线程试图“结构上”更改集合对象，将会抛出ConcurrentModificationException异常。但其它线程可以通过set()方法更改集合对象是允许的，因为这并没有从“结构上”更改集合。**==但是假如已经从结构上进行了更改，再调用set()方法，将会抛出IllegalArgumentException异常。
 
 ==结构上的更改指的是删除或者插入一个元素，这样会影响到map的结构。==
 
