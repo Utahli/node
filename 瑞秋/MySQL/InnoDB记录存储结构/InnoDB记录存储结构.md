@@ -28,7 +28,7 @@ ALTER TABLE 表名 ROW_FORMAT=行格式名称
 1. 真正的数据内容
 2. 占用的字节数
 
-因为如果不保存真实数据占用的字节数的话，MySQL服务器也不知道我们存储的数据究竟有多长。在`Compact`行格式中，把所有变长类型的列的长度都存放在记录的开头部位形成一个列表，按照列的顺序逆序存放，我们再次强调一遍，是逆序存放！ 
+因为如果不保存真实数据占用的字节数的话，MySQL服务器也不知道我们存储的数据究竟有多长。在`Compact`行格式中，把所有变长类型的列的长度都存放在记录的开头部位形成一个列表，按照列的顺序==逆序存放==！ 
 
 需要注意的一点是，==变长字段长度列表中只存储值为 **非NULL** 的列内容占用的长度，值为 **NULL** 的列的长度是不储存的 。== 
 
@@ -39,7 +39,7 @@ ALTER TABLE 表名 ROW_FORMAT=行格式名称
 我们知道表中的某些列可能存储`NULL`值，如果把这些NULL值都放到`记录的真实数据`中存储会很占地方，所以`Compact`行格式把这些值为`NULL`的列统一管理起来，存储到`NULL`值列表中，它的处理过程是这样的：
 
 1. 首先统计表中允许存储`NULL`的列有哪些。
-2. 如果表中没有允许存储 **NULL** 的列，则 *NULL值列表* 也不存在了，否则将每个允许存储`NULL`的列对应一个二进制位，二进制位按照列的顺序逆序排列， 
+2. 如果表中没有允许存储 **NULL** 的列，则 *NULL值列表* 也不存在了，否则将每个允许存储`NULL`的列对应一个二进制位，==二进制位按照列的顺序逆序排列==， 
    - 二进制位的值为`1`时，代表该列的值为`NULL`。
    - 二进制位的值为`0`时，代表该列的值不为`NULL`。
 3. `MySQL`规定`NULL值列表`必须用整数个字节的位表示，如果使用的二进制位个数不是整数个字节，则在字节的高位补`0`。 
@@ -205,7 +205,7 @@ mysql>
 
 ![image_1c9j5tdn316v11j8m15631f533r5h4.png-121.7kB](https://mmbiz.qpic.cn/mmbiz_png/RLmbWWew55FVTOrSL5huibzeawNtia5ey3NAkCN8pB5UZduWZl8Fd83JsQdtgXbBpboFjrXib3WFrHvxd1TbhicXhA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)image_1c9j5tdn316v11j8m15631f533r5h4.png-121.7kB
 
-从图中可以看出来，对于`Compact`和`Reduntant`行格式来说，如果某一列中的数据非常多的话，在本记录的真实数据处只会存储该列的前`786`个字节的数据和一个指向其他页的地址，然后把剩下的数据存放到其他页中，这个过程也叫做`行溢出`。画一个简图就是这样：
+从图中可以看出来，==对于`Compact`和`Reduntant`行格式来说，如果某一列中的数据非常多的话，在本记录的真实数据处只会存储该列的前`786`个字节的数据和一个指向其他页的地址，然后把剩下的数据存放到其他页中，这个过程也叫做`行溢出`==。画一个简图就是这样：
 
 ![image_1c9jc8v88uo3dpoav8n70um1hu.png-22.7kB](https://mmbiz.qpic.cn/mmbiz_png/RLmbWWew55FVTOrSL5huibzeawNtia5ey3ib7Tq6vJ7UupNM8xYcOJ3eibT7ib9RczQ9b7ibtESicfqgA2HvhPvugd2Ww/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)image_1c9jc8v88uo3dpoav8n70um1hu.png-22.7kB
 
@@ -268,7 +268,7 @@ mysql>
 
 ![image_1c9jeb6defgf1o981lgfciokjl4.png-43.1kB](https://mmbiz.qpic.cn/mmbiz_png/RLmbWWew55FVTOrSL5huibzeawNtia5ey3uBJNvJzVxfLRzRKyTN7ceCbzZ5SggPtkajauLia2ibiaic1icqHyqlxdVBA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1)image_1c9jeb6defgf1o981lgfciokjl4.png-43.1kB
 
-这就意味着：对于 **CHAR(M)** 类型的列来说，当列采用的是定长字符集时，该列占用的字节数不会被加到变长字段长度列表，而如果采用变长字符集时，该列占用的字节数也会被加到变长字段长度列表。
+==这就意味着：对于 **CHAR(M)** 类型的列来说，当列采用的是定长字符集时，该列占用的字节数不会被加到变长字段长度列表，而如果采用变长字符集时，该列占用的字节数也会被加到变长字段长度列表。==
 
 ## 总结
 
